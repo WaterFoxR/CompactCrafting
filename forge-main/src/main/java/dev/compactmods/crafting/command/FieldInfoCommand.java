@@ -68,10 +68,10 @@ public class FieldInfoCommand {
     }
 
     private static void outputStdFieldInfo(CommandSourceStack src, IMiniaturizationField field) {
-        src.sendSuccess(Component.literal("Center: " + field.getCenter().toString()), false);
-        src.sendSuccess(Component.literal("Size: " + field.getFieldSize().getName()), false);
+        src.sendSuccess(()->Component.literal("Center: " + field.getCenter().toString()), false);
+        src.sendSuccess(()->Component.literal("Size: " + field.getFieldSize().getName()), false);
         field.getCurrentRecipe().ifPresent(rec -> {
-            src.sendSuccess(Component.literal("Recipe: " + rec.getRecipeIdentifier()), false);
+            src.sendSuccess(()->Component.literal("Recipe: " + rec.getRecipeIdentifier()), false);
         });
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -17,18 +18,18 @@ public class CodecExtensions {
      public static final Codec<Block> BLOCK_ID_CODEC = ResourceLocation.CODEC
              .flatXmap(rl -> ForgeRegistries.BLOCKS.containsKey(rl) ?
                              DataResult.success(ForgeRegistries.BLOCKS.getValue(rl)) :
-                             DataResult.error(String.format("Block %s is not registered.", rl)),
-                bl -> DataResult.success(ForgeRegistries.BLOCKS.getKey(bl)))
+                             DataResult.error(() -> String.format("Block %s is not registered.", rl)),
+                     bl -> DataResult.success(ForgeRegistries.BLOCKS.getKey(bl)))
              .stable();
 
-     public static final Codec<ItemStack> FRIENDLY_ITEMSTACK = RecordCodecBuilder.create(i -> i.group(
-             Registry.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
-             Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),
-             CompoundTag.CODEC.optionalFieldOf("tag")
-                     .forGetter(is -> Optional.ofNullable(is.getTag()))
-     ).apply(i, (id, count, tag) -> {
-          final var is = new ItemStack(id, count);
-          tag.ifPresent(is::setTag);
-          return is;
-     }));
+    public static final Codec<ItemStack> FRIENDLY_ITEMSTACK = RecordCodecBuilder.create(i -> i.group(
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
+            Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),
+            CompoundTag.CODEC.optionalFieldOf("tag")
+                    .forGetter(is -> Optional.ofNullable(is.getTag()))
+    ).apply(i, (id, count, tag) -> {
+        final var is = new ItemStack(id, count);
+        tag.ifPresent(is::setTag);
+        return is;
+    }));
 }

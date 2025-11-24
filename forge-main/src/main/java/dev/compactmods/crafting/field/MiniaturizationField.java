@@ -1,10 +1,12 @@
 package dev.compactmods.crafting.field;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import dev.compactmods.crafting.CompactCrafting;
+import dev.compactmods.crafting.api.projector.FieldProjectorSet;
 import dev.compactmods.crafting.core.CCMiniaturizationRecipes;
 import dev.compactmods.crafting.api.EnumCraftingState;
 import dev.compactmods.crafting.api.catalyst.ICatalystMatcher;
@@ -29,6 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -42,6 +45,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -56,6 +60,7 @@ public class MiniaturizationField implements IMiniaturizationField {
     private MiniaturizationFieldSize size;
     private BlockPos center;
     private boolean loaded;
+    private FieldProjectorSet projectors;
 
     @Nullable
     private MiniaturizationRecipe currentRecipe = null;
@@ -78,12 +83,13 @@ public class MiniaturizationField implements IMiniaturizationField {
     private static Disposable CHUNK_LISTENER;
 
     public MiniaturizationField() {
-    }
+       }
 
     private MiniaturizationField(MiniaturizationFieldSize size, BlockPos center) {
         this.center = center;
         this.size = size;
         this.craftingState = EnumCraftingState.NOT_MATCHED;
+        this.projectors = new FieldProjectorSet(new WeakReference<>(level), this.size.getProjectorLocations(this.center).collect(Collectors.toSet()), this.size);
 
         setupChunkListener();
     }
@@ -93,6 +99,7 @@ public class MiniaturizationField implements IMiniaturizationField {
 
         this.center = NbtUtils.readBlockPos(nbt.getCompound("center"));
         this.size = MiniaturizationFieldSize.valueOf(nbt.getString("size"));
+        this.projectors = new FieldProjectorSet(new WeakReference<>(level), this.size.getProjectorLocations(this.center).collect(Collectors.toSet()), this.size);
 
         setupChunkListener();
 
@@ -104,7 +111,7 @@ public class MiniaturizationField implements IMiniaturizationField {
 
         if (nbt.contains("matchedBlocks")) {
             StructureTemplate t = new StructureTemplate();
-            t.load(nbt.getCompound("matchedBlocks"));
+            t.load(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound("matchedBlocks"));
             this.matchedBlocks = t;
         } else {
             this.matchedBlocks = null;
@@ -113,10 +120,59 @@ public class MiniaturizationField implements IMiniaturizationField {
         this.disabled = nbt.contains("disabled") && nbt.getBoolean("disabled");
     }
 
+    private MiniaturizationField(Level level, CompoundTag nbt) {
+        this.level = level;
+        this.craftingState = EnumCraftingState.valueOf(nbt.getString("state"));
+
+        this.center = NbtUtils.readBlockPos(nbt.getCompound("center"));
+        this.size = MiniaturizationFieldSize.valueOf(nbt.getString("size"));
+        this.projectors = new FieldProjectorSet(new WeakReference<>(level), this.size.getProjectorLocations(this.center).collect(Collectors.toSet()), this.size);
+
+        if (level != null) {
+            setupChunkListener();
+        }
+
+        // temp load recipe
+        if (nbt.contains("recipe") && level != null) {
+            ResourceLocation recipeId = ResourceLocation.tryParse(nbt.getString("recipe"));
+            this.craftingProgress = nbt.getInt("progress");
+
+            // Load recipe from registry
+            level.getRecipeManager().byKey(recipeId).ifPresent(recipe -> {
+                if (recipe instanceof MiniaturizationRecipe mr) {
+                    this.currentRecipe = mr;
+                }
+            });
+        }
+
+        // if we're in CRAFTING/MATCHED state but have no recipe, reset to NOT_MATCHED
+        if ((this.craftingState == EnumCraftingState.CRAFTING || this.craftingState == EnumCraftingState.MATCHED) && this.currentRecipe == null) {
+            this.craftingState = EnumCraftingState.NOT_MATCHED;
+            this.craftingProgress = 0;
+        }
+
+        if (nbt.contains("matchedBlocks")) {
+            StructureTemplate t = new StructureTemplate();
+            t.load(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound("matchedBlocks"));
+            this.matchedBlocks = t;
+        } else {
+            this.matchedBlocks = null;
+        }
+
+        this.disabled = nbt.contains("disabled") && nbt.getBoolean("disabled");
+    }
+
+    public static MiniaturizationField fromNBT(Level level, CompoundTag nbt) {
+        return new MiniaturizationField(level, nbt);
+    }
+
     private void setupChunkListener() {
         // add projector and central chunks
-        final Set<ChunkPos> insideChunks = getProjectorPositions().map(ChunkPos::new).collect(Collectors.toSet());
-        insideChunks.add(new ChunkPos(center));
+//        final Set<ChunkPos> insideChunks = getProjectorPositions().map(ChunkPos::new).collect(Collectors.toSet());
+
+        final Set<ChunkPos> insideChunks =this.projectors.locations().stream().map(ChunkPos::new).collect(Collectors.toSet());
+
+                insideChunks.add(new ChunkPos(center));
 
         CHUNK_LISTENER = WorldEventHandler.CHUNK_CHANGES.filter(ce -> {
             boolean sameLevel = ((LevelChunk) ce.getChunk()).getLevel().dimension().equals(level.dimension());
@@ -195,6 +251,11 @@ public class MiniaturizationField implements IMiniaturizationField {
     @Override
     public Stream<BlockPos> getProjectorPositions() {
         return this.size.getProjectorLocations(center);
+    }
+
+    @Override
+    public FieldProjectorSet getProjectors() {
+        return this.projectors;
     }
 
     public AABB getBounds() {
@@ -377,7 +438,7 @@ public class MiniaturizationField implements IMiniaturizationField {
             this.matchedBlocks = new StructureTemplate();
 
             final AABB fieldBounds = size.getBoundsAtPosition(center);
-            BlockPos minPos = new BlockPos(fieldBounds.minX, fieldBounds.minY, fieldBounds.minZ);
+            BlockPos minPos = new BlockPos((int)fieldBounds.minX, (int)fieldBounds.minY, (int)fieldBounds.minZ);
 
             // boolean here is to capture entities - TODO maybe
             matchedBlocks.fillFromWorld(level, minPos, size.getBoundsAsBlockPos(), false, null);
@@ -516,7 +577,7 @@ public class MiniaturizationField implements IMiniaturizationField {
 
         if (restoreBlocks) {
             AABB bounds = getBounds();
-            BlockPos placeAt = new BlockPos(bounds.minX, bounds.minY, bounds.minZ);
+            BlockPos placeAt = new BlockPos((int)bounds.minX, (int)bounds.minY, (int)bounds.minZ);
             // TODO - Check the const here, 2 may be wrong
             matchedBlocks.placeInWorld((ServerLevelAccessor) level, placeAt, placeAt,
                     new StructurePlaceSettings(), level.random, 2);

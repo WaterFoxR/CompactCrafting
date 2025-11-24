@@ -32,24 +32,31 @@ public class FieldDeactivatedPacket {
     }
 
     public FieldDeactivatedPacket(FriendlyByteBuf buf) {
-        FieldDeactivatedPacket pkt = buf.readWithCodec(CODEC);
-
-        this.fieldSize = pkt.fieldSize;
-        this.fieldCenter = pkt.fieldCenter;
+        this.fieldSize = MiniaturizationFieldSize.valueOf(buf.readUtf());
+        this.fieldCenter = buf.readBlockPos();
 
         this.projectors = fieldSize.getProjectorLocations(fieldCenter)
                 .map(BlockPos::immutable).toArray(BlockPos[]::new);
     }
 
     public static boolean handle(FieldDeactivatedPacket message, Supplier<NetworkEvent.Context> context) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ClientPacketHandler.handleFieldDeactivation(message.fieldCenter);
-        });
+//        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+//            ClientPacketHandler.handleFieldDeactivation(message.fieldCenter);
+//        });
+//
+//        return true;
+        NetworkEvent.Context ctx = context.get();
 
+        ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            ClientPacketHandler.handleFieldDeactivation(message.fieldCenter);
+        }));
+
+        ctx.setPacketHandled(true);
         return true;
     }
 
     public static void encode(FieldDeactivatedPacket pkt, FriendlyByteBuf buf) {
-        buf.writeWithCodec(CODEC, pkt);
+        buf.writeUtf(pkt.fieldSize.name());
+        buf.writeBlockPos(pkt.fieldCenter);
     }
 }

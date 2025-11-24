@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import dev.compactmods.crafting.api.field.IMiniaturizationField;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
+import dev.compactmods.crafting.api.projector.FieldProjectorProperties;
 import dev.compactmods.crafting.core.CCCapabilities;
 import dev.compactmods.crafting.field.MiniaturizationField;
 import dev.compactmods.crafting.network.FieldActivatedPacket;
@@ -34,8 +35,11 @@ import net.minecraftforge.network.PacketDistributor;
 
 public class FieldProjectorBlock extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
-    public static final EnumProperty<MiniaturizationFieldSize> SIZE = EnumProperty.create("field", MiniaturizationFieldSize.class);
+//    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+//    public static final EnumProperty<MiniaturizationFieldSize> SIZE = EnumProperty.create("field", MiniaturizationFieldSize.class);
+
+    public static final DirectionProperty FACING = FieldProjectorProperties.FACING;
+    public static final EnumProperty<MiniaturizationFieldSize> SIZE = FieldProjectorProperties.SIZE;
 
     private static final VoxelShape BASE = Shapes.box(0, 0, 0, 1, 6 / 16d, 1);
 

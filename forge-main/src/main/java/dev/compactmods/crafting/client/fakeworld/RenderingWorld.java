@@ -3,13 +3,14 @@ package dev.compactmods.crafting.client.fakeworld;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.*;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -43,8 +44,15 @@ public class RenderingWorld extends Level {
     private final RenderingChunkProvider chunkProvider;
 
     public RenderingWorld(MiniaturizationRecipe recipe) {
-        super(new RenderingSpawnInfo(), Level.OVERWORLD, BuiltinRegistries.DIMENSION_TYPE.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
-                () -> InactiveProfiler.INSTANCE, true, false, 0, 1000000);
+        super(new RenderingSpawnInfo(),
+                Level.OVERWORLD,
+                Minecraft.getInstance().level.registryAccess(),
+                Minecraft.getInstance().level.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
+                ()->InactiveProfiler.INSTANCE,
+                true,
+                false,
+                0,
+                1000000);
         this.recipe = recipe;
         this.chunkProvider = new RenderingChunkProvider(this, recipe);
     }
@@ -55,14 +63,24 @@ public class RenderingWorld extends Level {
     }
 
     @Override
+    public void playSeededSound(@org.jetbrains.annotations.Nullable Player player, double v, double v1, double v2, Holder<SoundEvent> holder, SoundSource soundSource, float v3, float v4, long l) {
+
+    }
+
+    @Override
     public void playSeededSound(@org.jetbrains.annotations.Nullable Player p_220363_, double p_220364_, double p_220365_, double p_220366_, SoundEvent p_220367_, SoundSource p_220368_, float p_220369_, float p_220370_, long p_220371_) {
 
     }
 
     @Override
-    public void playSeededSound(@org.jetbrains.annotations.Nullable Player p_220372_, Entity p_220373_, SoundEvent p_220374_, SoundSource p_220375_, float p_220376_, float p_220377_, long p_220378_) {
+    public void playSeededSound(@org.jetbrains.annotations.Nullable Player player, Entity entity, Holder<SoundEvent> holder, SoundSource soundSource, float v, float v1, long l) {
 
     }
+
+//    @Override
+//    public void playSeededSound(@org.jetbrains.annotations.Nullable Player p_220372_, Entity p_220373_, SoundEvent p_220374_, SoundSource p_220375_, float p_220376_, float p_220377_, long p_220378_) {
+//
+//    }
 
     @Override
     public void playSound(@Nullable Player p_184148_1_, double p_184148_2_, double p_184148_4_, double p_184148_6_, SoundEvent p_184148_8_, SoundSource p_184148_9_, float p_184148_10_, float p_184148_11_) {
@@ -157,6 +175,11 @@ public class RenderingWorld extends Level {
     }
 
     @Override
+    public FeatureFlagSet enabledFeatures() {
+        return null;
+    }
+
+    @Override
     public float getShade(Direction p_230487_1_, boolean p_230487_2_) {
         return 0;
     }
@@ -168,6 +191,6 @@ public class RenderingWorld extends Level {
 
     @Override
     public Holder<Biome> getUncachedNoiseBiome(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
-        return registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.THE_VOID);
+        return registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID);
     }
 }

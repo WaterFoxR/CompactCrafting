@@ -11,7 +11,8 @@ import dev.compactmods.crafting.proxies.data.RescanFieldProxyEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.client.model.obj.ObjMaterialLibrary;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,13 +24,15 @@ public class CCBlocks {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, CompactCrafting.MOD_ID);
 
     public static final RegistryObject<Block> FIELD_PROJECTOR_BLOCK = BLOCKS.register("field_projector", () ->
-            new FieldProjectorBlock(BlockBehaviour.Properties.of(Material.METAL)
+            new FieldProjectorBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
                     .strength(8, 20)
                     .isRedstoneConductor((state, level, pos) -> true)
                     .requiresCorrectToolForDrops()
             ));
 
-    static final Supplier<BlockBehaviour.Properties> PROXY_PROPS = () -> BlockBehaviour.Properties.of(Material.HEAVY_METAL)
+    static final Supplier<BlockBehaviour.Properties> PROXY_PROPS = () -> BlockBehaviour.Properties.of()
+            .mapColor(MapColor.METAL)
             .strength(8, 20)
             .requiresCorrectToolForDrops();
 

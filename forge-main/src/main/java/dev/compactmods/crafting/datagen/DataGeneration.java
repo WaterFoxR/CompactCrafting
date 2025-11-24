@@ -19,13 +19,14 @@ public class DataGeneration {
     }
 
     private static void registerServerProviders(DataGenerator generator, GatherDataEvent event) {
-        generator.addProvider(event.includeServer(), new LootTableGenerator(generator));
+        generator.addProvider(event.includeServer(), new LootTableGenerator(generator.getPackOutput()));
         generator.addProvider(event.includeServer(), new RecipeGenerator(generator));
     }
 
     private static void registerClientProviders(DataGenerator generator, GatherDataEvent event) {
-        generator.addProvider(event.includeClient(), new SharedStateGenerator(generator, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new ProjectorStateGenerator(generator, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new ProxyStateGenerator(generator, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new BlockStateGenerator(generator, event.getExistingFileHelper()));
+//        generator.addProvider(event.includeClient(), new SharedStateGenerator(generator, event.getExistingFileHelper()));
+//        generator.addProvider(event.includeClient(), new ProjectorStateGenerator(generator, event.getExistingFileHelper()));
+//        generator.addProvider(event.includeClient(), new ProxyStateGenerator(generator, event.getExistingFileHelper()));
     }
 }

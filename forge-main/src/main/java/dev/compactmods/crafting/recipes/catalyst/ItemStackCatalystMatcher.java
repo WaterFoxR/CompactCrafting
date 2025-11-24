@@ -1,7 +1,5 @@
 package dev.compactmods.crafting.recipes.catalyst;
 
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -12,7 +10,6 @@ import dev.compactmods.crafting.api.catalyst.ICatalystMatcher;
 import dev.compactmods.crafting.core.CCCatalystTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +54,11 @@ public class ItemStackCatalystMatcher implements ICatalystMatcher, CatalystType<
             // filters defined but item has no nbt
             if(!stack.hasTag() && !filter.isEmpty()) return false;
             final var tag = stack.getTag();
-            Objects.requireNonNull(tag);
+//            Objects.requireNonNull(tag);
+            // 安全检查tag是否为null
+            if (tag == null) {
+                return filter.isEmpty(); // 如果filter为空，则匹配；否则不匹配
+            }
             return NbtUtils.compareNbt(tag, filter, true);
         };
     }

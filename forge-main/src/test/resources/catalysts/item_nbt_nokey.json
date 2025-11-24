@@ -1,7 +1,0 @@
-{
-  "type": "compactcrafting:item",
-  "item": "minecraft:redstone",
-  "nbt": {
-    "doesnotexist": true
-  }
-}

@@ -16,7 +16,7 @@ public class CCItems {
 
     // ================================================================================================================
 
-    static final Supplier<Item.Properties> BASE_ITEM_PROPS = () -> new Item.Properties().tab(CompactCrafting.ITEM_GROUP);
+    static final Supplier<Item.Properties> BASE_ITEM_PROPS = Item.Properties::new;
 
     public static final RegistryObject<Item> FIELD_PROJECTOR_ITEM = ITEMS.register("field_projector", () ->
             new FieldProjectorItem(CCBlocks.FIELD_PROJECTOR_BLOCK.get(), BASE_ITEM_PROPS.get()));

@@ -16,7 +16,7 @@ public class ContainerRegistration {
 
     public static final RegistryObject<MenuType<TestContainer>> TEST_CONTAINER = CONTAINERS.register("test",
             () -> IForgeMenuType.create((windowId, inv, data) -> {
-                Level world = inv.player.level;
+                Level world = inv.player.level();
                 return new TestContainer(windowId, world, inv, inv.player);
             }));
 

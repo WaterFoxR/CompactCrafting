@@ -12,7 +12,7 @@ import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPostBackgroun
 import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPreBackgroundRenderable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
@@ -109,6 +109,16 @@ public class TabsWidget extends WidgetBase implements
     }
 
     @Override
+    public void setFocused(boolean pFocused) {
+
+    }
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Vec3 realCoords = getRealRelativePos(mouseX, mouseY);
         for (GuiTab tab : tabs.values()) {
@@ -124,7 +134,7 @@ public class TabsWidget extends WidgetBase implements
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         Font font = Minecraft.getInstance().font;
 
         String page = String.format("%d/%d", currentPage + 1, numPages);
@@ -134,18 +144,15 @@ public class TabsWidget extends WidgetBase implements
         int yOffset = -font.lineHeight - 28 - 2;
         int yOffsetArrows = -28 - (int) ARROW_TEXTURE_SIZE.y;
 
-        // RenderSystem.pushMatrix();
+        PoseStack poseStack = guiGraphics.pose();
         if (this.screenSide == EnumTabWidgetSide.BOTTOM) {
-            matrixStack.translate(0, parentHeight, 0);
+            poseStack.translate(0, parentHeight, 0);
             yOffset = height + 4;
             yOffsetArrows = height + 1;
         }
 
-        font.draw(matrixStack,
-                Component.literal(page),
-                xOffset, yOffset, 0xFFFFFFFF);
+        guiGraphics.drawString(font, Component.literal(page), xOffset, yOffset, 0xFFFFFFFF);
 
-        Minecraft.getInstance().getTextureManager().bindForSetup(TEXTURE);
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -163,28 +170,15 @@ public class TabsWidget extends WidgetBase implements
         boolean mouseOverAL = mouseX > 0 && mouseX <= 100;
         CompactCrafting.LOGGER.debug(String.format("%s,%s", mouseX, mouseY));
 
-        // boolean mouseOverAL = UiHelper.pointInBounds(realCoords.x, realCoords.y,arrowLeft, yOffsetArrows, ARROW_TEXTURE_SIZE.x,                ARROW_TEXTURE_SIZE.y);
-
         if (mouseOverAL)
             arrowLeftU += (2 * ARROW_TEXTURE_SIZE.x);
 
-        GuiComponent.blit(matrixStack,
-                arrowLeft, yOffsetArrows, 0,
-                arrowLeftU, arrowLeftV,
-                (int) ARROW_TEXTURE_SIZE.x, (int) ARROW_TEXTURE_SIZE.y,
-                256, 256);
-
-        GuiComponent.blit(matrixStack,
-                arrowRight, yOffsetArrows, 0,
-                ARROW_OFFSET_X, ARROW_OFFSET_Y,
-                (int) ARROW_TEXTURE_SIZE.x, (int) ARROW_TEXTURE_SIZE.y,
-                256, 256);
-
-        // RenderSystem.popMatrix();
+        guiGraphics.blit(TEXTURE, arrowLeft, yOffsetArrows, arrowLeftU, arrowLeftV, (int) ARROW_TEXTURE_SIZE.x, (int) ARROW_TEXTURE_SIZE.y, 256, 256);
+        guiGraphics.blit(TEXTURE, arrowRight, yOffsetArrows, ARROW_OFFSET_X, ARROW_OFFSET_Y, (int) ARROW_TEXTURE_SIZE.x, (int) ARROW_TEXTURE_SIZE.y, 256, 256);
     }
 
     @Override
-    public void renderPreBackground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderPreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.tabs.isEmpty()) {
             int numTabs = getNumberTabs();
             int numTabsPerRow = width / 28;
@@ -192,33 +186,35 @@ public class TabsWidget extends WidgetBase implements
             int start = currentPage * numTabs;
             int end = Math.min(numTabs, numTabsPerRow * (currentPage + 1));
 
-            matrixStack.pushPose();
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.pushPose();
             if (this.screenSide == EnumTabWidgetSide.BOTTOM)
-                matrixStack.translate(0, parentHeight, 0);
+                poseStack.translate(0, parentHeight, 0);
 
             for (int idx = start; idx < end; idx++) {
                 GuiTab tab = this.tabs.get(idx);
 
                 // Check tab active state - active tab needs to be drawn in post
                 if (!isActive(tab))
-                    tab.renderPreBackground(matrixStack, mouseX, mouseY, partialTicks);
+                    tab.renderPreBackground(guiGraphics, mouseX, mouseY, partialTicks);
             }
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
     }
 
     @Override
-    public void renderPostBackground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderPostBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.tabs.isEmpty()) {
-            matrixStack.pushPose();
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.pushPose();
             if (this.screenSide == EnumTabWidgetSide.BOTTOM)
-                matrixStack.translate(0, parentHeight, 0);
+                poseStack.translate(0, parentHeight, 0);
 
             if (activeTab != null)
-                activeTab.renderPostBackground(matrixStack, mouseX, mouseY, partialTicks);
+                activeTab.renderPostBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
     }
 

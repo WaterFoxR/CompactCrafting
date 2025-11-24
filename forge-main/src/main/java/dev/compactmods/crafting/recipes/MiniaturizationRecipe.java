@@ -26,11 +26,14 @@ import dev.compactmods.crafting.recipes.catalyst.CatalystMatcherCodec;
 import dev.compactmods.crafting.recipes.components.MiniaturizationRecipeComponents;
 import dev.compactmods.crafting.recipes.components.RecipeComponentTypeCodec;
 import dev.compactmods.crafting.recipes.layers.RecipeLayerUtil;
+import dev.compactmods.crafting.recipes.setup.FakeInventory;
 import dev.compactmods.crafting.recipes.setup.RecipeBase;
 import dev.compactmods.crafting.server.ServerConfig;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
 import dev.compactmods.crafting.util.CodecExtensions;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -317,6 +320,18 @@ public class MiniaturizationRecipe extends RecipeBase implements IMiniaturizatio
     @Override
     public ResourceLocation getRecipeIdentifier() {
         return this.id;
+    }
+
+    // 从RecipeBase转移过来的方法
+    @Override
+    public ItemStack assemble(FakeInventory pContainer, RegistryAccess pRegistryAccess) {
+        return ItemStack.EMPTY;
+    }
+
+    // 从RecipeBase转移过来的方法
+    @Override
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+        return ItemStack.EMPTY;
     }
 
     @Override

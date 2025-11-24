@@ -1,9 +1,12 @@
 package dev.compactmods.crafting.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -15,12 +18,45 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
 public class GhostRenderer {
+    public static void render(BlockState state,@Nullable BlockPos pos,PoseStack matrixStack){
+        final Minecraft mc = Minecraft.getInstance();
+        final MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
+        final Camera mainCamera = mc.gameRenderer.getMainCamera();
+        final ClientLevel level = mc.level;
+
+        matrixStack.pushPose();
+        {
+            Vec3 projectedView = mainCamera.getPosition();
+            matrixStack.translate(-projectedView.x(), -projectedView.y(), -projectedView.z());
+
+            matrixStack.pushPose();
+            {
+                matrixStack.translate(
+                        (double) pos.getX() + 0.05,
+                        (double) pos.getY() + 0.05,
+                        (double) pos.getZ() + 0.05
+                );
+
+                matrixStack.scale(0.9f, 0.9f, 0.9f);
+
+                GhostRenderer.renderTransparentBlock(state,pos,matrixStack,buffer,100);
+            }
+            matrixStack.popPose();
+        }
+        matrixStack.popPose();
+
+        RenderSystem.disableDepthTest();
+        buffer.endBatch(CCRenderTypes.PHANTOM);
+    }
+
+
     public static void renderTransparentBlock(BlockState state, @Nullable BlockPos pos, PoseStack matrix, MultiBufferSource buffer) {
         renderTransparentBlock(state, pos, matrix, buffer, 100);
     }

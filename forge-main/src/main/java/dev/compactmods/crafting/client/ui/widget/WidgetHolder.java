@@ -1,14 +1,15 @@
 package dev.compactmods.crafting.client.ui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPostBackgroundRenderable;
 import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPreBackgroundRenderable;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetHolder implements Widget {
+public class WidgetHolder implements Renderable {
     protected List<WidgetBase> widgets;
 
     public WidgetHolder() {
@@ -16,9 +17,9 @@ public class WidgetHolder implements Widget {
     }
 
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         for(WidgetBase w : widgets) {
-            w.render(matrix, mouseX, mouseY, partialTicks);
+            w.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -26,17 +27,17 @@ public class WidgetHolder implements Widget {
         this.widgets.add(widget);
     }
 
-    public void renderPreBackground(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void renderPreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         for (WidgetBase w : this.widgets) {
             if (w instanceof IWidgetPreBackgroundRenderable)
-                ((IWidgetPreBackgroundRenderable) w).renderPreBackground(matrix, mouseX, mouseY, partialTicks);
+                ((IWidgetPreBackgroundRenderable) w).renderPreBackground(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
 
-    public void renderPostBackground(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void renderPostBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         for (WidgetBase w : this.widgets) {
             if (w instanceof IWidgetPostBackgroundRenderable)
-                ((IWidgetPostBackgroundRenderable) w).renderPostBackground(matrix, mouseX, mouseY, partialTicks);
+                ((IWidgetPostBackgroundRenderable) w).renderPostBackground(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
 

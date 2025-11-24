@@ -25,7 +25,7 @@ public final class RecipeComponentTypeCodec implements Codec<RecipeComponentType
             if (reg.containsKey(resource))
                 return DataResult.success(rl.mapFirst(reg::getValue));
 
-            return DataResult.error("Unknown registry key: " + rl.getFirst());
+            return DataResult.error(() -> "Unknown registry key: " + rl.getFirst());
         });
     }
 
@@ -33,7 +33,7 @@ public final class RecipeComponentTypeCodec implements Codec<RecipeComponentType
     public <T> DataResult<T> encode(RecipeComponentType<?> input, DynamicOps<T> ops, T prefix) {
         ResourceLocation key = ComponentRegistration.COMPONENTS.get().getKey(input);
         if (key == null)
-            return DataResult.error("Unknown registry element " + input);
+            return DataResult.error(() ->"Unknown registry element " + input);
 
         T toMerge = ops.createString(key.toString());
         return ops.mergeToPrimitive(prefix, toMerge);

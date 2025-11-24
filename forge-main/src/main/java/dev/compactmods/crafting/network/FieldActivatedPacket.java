@@ -44,9 +44,14 @@ public class FieldActivatedPacket {
     }
 
     public FieldActivatedPacket(FriendlyByteBuf buf) {
-        FieldActivatedPacket base = buf.readWithCodec(CODEC);
-        this.field = base.field;
-        this.clientData = base.clientData;
+        MiniaturizationFieldSize fieldSize = MiniaturizationFieldSize.valueOf(buf.readUtf());
+        BlockPos center = buf.readBlockPos();
+        CompoundTag clientData = buf.readNbt();
+
+        this.field = new MiniaturizationField();
+        this.field.setSize(fieldSize);
+        this.field.setCenter(center);
+        this.clientData = clientData;
     }
 
     public static void handle(FieldActivatedPacket message, Supplier<NetworkEvent.Context> context) {
@@ -60,6 +65,8 @@ public class FieldActivatedPacket {
     }
 
     public static void encode(FieldActivatedPacket pkt, FriendlyByteBuf buf) {
-        buf.writeWithCodec(CODEC, pkt);
+        buf.writeUtf(pkt.field.getFieldSize().name());
+        buf.writeBlockPos(pkt.field.getCenter());
+        buf.writeNbt(pkt.clientData);
     }
 }

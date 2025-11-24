@@ -12,6 +12,7 @@ import dev.compactmods.crafting.client.ui.widget.tab.EnumTabWidgetSide;
 import dev.compactmods.crafting.client.ui.widget.tab.GuiTab;
 import dev.compactmods.crafting.client.ui.widget.tab.TabsWidget;
 import dev.compactmods.crafting.core.CCBlocks;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -67,39 +68,42 @@ public class TestScreen extends ContainerWidgetScreen<TestContainer> implements 
     }
 
     @Override
-    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms);
-        super.render(ms, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-        ms.pushPose();
-        ms.translate(leftPos, topPos, 0);
-        this.widgets.render(ms, mouseX, mouseY, partialTicks);
-        ms.popPose();
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(leftPos, topPos, 0);
+        this.widgets.render(guiGraphics, mouseX, mouseY, partialTicks);
+        guiGraphics.pose().popPose();
     }
 
     @Override
-    protected void renderLabels(PoseStack ms, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         // this.font.draw(ms, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
-        this.font.draw(ms, this.player.getInventory().getDisplayName(), (float) this.inventoryLabelX, (float) this.inventoryLabelY, 4210752);
+        guiGraphics.drawString(this.font, this.player.getInventory().getDisplayName(), this.inventoryLabelX, this.inventoryLabelY, 4210752);
+//        this.font.draw(ms, this.player.getInventory().getDisplayName(), (float) this.inventoryLabelX, (float) this.inventoryLabelY, 4210752);
+
     }
 
     @Override
-    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-
+        PoseStack ms = guiGraphics.pose();
         ms.pushPose();
         ms.translate(leftPos, topPos, 0);
-        this.widgets.renderPreBackground(ms, mouseX, mouseY, partialTicks);
+        this.widgets.renderPreBackground(guiGraphics, mouseX, mouseY, partialTicks);
         ms.popPose();
 
         this.minecraft.getTextureManager().bindForSetup(GUI);
-        this.blit(ms, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(GUI,relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+//        this.blit(ms, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
 
         ms.pushPose();
         ms.translate(leftPos, topPos, 0);
-        this.widgets.renderPostBackground(ms, mouseX, mouseY, partialTicks);
+        this.widgets.renderPostBackground(guiGraphics, mouseX, mouseY, partialTicks);
         ms.popPose();
     }
 

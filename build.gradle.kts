@@ -5,6 +5,7 @@ if(envVersion.startsWith("v"))
 val mod_id: String by extra
 val isRelease: Boolean = (System.getenv("CC_RELEASE") ?: "false").equals("true", true)
 
+
 plugins {
     id("maven-publish")
 }

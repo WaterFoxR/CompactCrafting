@@ -2,7 +2,6 @@ package dev.compactmods.crafting.field.render;
 
 import java.util.Optional;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.recipe.IMiniaturizationRecipe;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
@@ -17,6 +16,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class CraftingPreviewRenderer {
     public static void render(IMiniaturizationRecipe recipe, double progress, PoseStack stack, MultiBufferSource buffers, int light, int overlay) {
@@ -40,7 +41,7 @@ public class CraftingPreviewRenderer {
 
             long gameTime = Minecraft.getInstance().level.getGameTime();
             double angle = (gameTime  % 360.0) * 2.0d;
-            stack.mulPose(Vector3f.YP.rotationDegrees((float) angle));
+            stack.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(angle), new Vector3f(0, 1, 0)));
 
             AABB dimensions = recipe.getDimensions();
             stack.translate(-(dimensions.getXsize() / 2), -(dimensions.getYsize() / 2), -(dimensions.getZsize() / 2));

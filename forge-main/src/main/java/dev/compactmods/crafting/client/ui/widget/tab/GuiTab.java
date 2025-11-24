@@ -9,15 +9,15 @@ import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPostBackgroun
 import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPreBackgroundRenderable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 
-public class GuiTab implements Widget, GuiEventListener, IWidgetPreBackgroundRenderable, IWidgetPostBackgroundRenderable {
+public class GuiTab implements Renderable, GuiEventListener, IWidgetPreBackgroundRenderable, IWidgetPostBackgroundRenderable {
 
     protected final ResourceLocation TEXTURE = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/widget/tabs.png");
 
@@ -77,11 +77,21 @@ public class GuiTab implements Widget, GuiEventListener, IWidgetPreBackgroundRen
     }
 
     @Override
-    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks) {
+    public void setFocused(boolean pFocused) {
 
     }
 
-    protected void renderTabButton(PoseStack matrix, boolean isActive, boolean topRow, boolean rightAligned, ItemStack icon) {
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        // 空的render方法，因为实际的渲染在pre/post background方法中处理
+    }
+
+    protected void renderTabButton(GuiGraphics guiGraphics, boolean isActive, boolean topRow, boolean rightAligned, ItemStack icon) {
         Vec2 tabPos = this.screenPosition;
 
         int uvU = 0;
@@ -110,41 +120,23 @@ public class GuiTab implements Widget, GuiEventListener, IWidgetPreBackgroundRen
         }
 
         RenderSystem.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
-        GuiComponent.blit(matrix, (int) renderPosX, (int) renderPosY, 0, (float) uvU, (float) uvV, 28, 32, 256, 256);
-
-//        RenderSystem.pushMatrix();
-//        Matrix4f m = matrix.last().pose();
-//        RenderSystem.multMatrix(m);
-//
-//        int iconRenderX = (int) renderPosX + 6;
-//        int iconRenderY = (int) renderPosY + 8 + (topRow ? 1 : -1);
-//        RenderSystem.enableRescaleNormal();
-//
-//        this.itemRenderer.renderAndDecorateItem(icon, iconRenderX, iconRenderY);
-//        this.itemRenderer.renderGuiItemDecorations(this.fontRenderer, icon, iconRenderX, iconRenderY);
-//
-//        RenderSystem.popMatrix();
+        guiGraphics.blit(TEXTURE, (int) renderPosX, (int) renderPosY, uvU, uvV, 28, 32, 256, 256);
     }
 
     @Override
-    public void renderPostBackground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderPostBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (container.isActive(this)) {
             // Renders active tab above rest of background
-            matrixStack.pushPose();
-            Minecraft.getInstance().getTextureManager().bindForSetup(TEXTURE);
-            renderTabButton(matrixStack, true,
+            renderTabButton(guiGraphics, true,
                     container.getSide() == EnumTabWidgetSide.TOP,
                     isAlignedRight, icon);
-
-            matrixStack.popPose();
         }
     }
 
     @Override
-    public void renderPreBackground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderPreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!container.isActive(this)) {
-            Minecraft.getInstance().getTextureManager().bindForSetup(TEXTURE);
-            renderTabButton(matrixStack, false,
+            renderTabButton(guiGraphics, false,
                     container.getSide() == EnumTabWidgetSide.TOP,
                     isAlignedRight, this.icon);
         }

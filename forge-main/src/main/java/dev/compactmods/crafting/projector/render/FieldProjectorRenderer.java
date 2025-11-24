@@ -2,17 +2,11 @@ package dev.compactmods.crafting.projector.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.field.IMiniaturizationField;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
 import dev.compactmods.crafting.client.ClientConfig;
-import dev.compactmods.crafting.client.render.CCRenderTypes;
-import dev.compactmods.crafting.client.render.CubeRenderHelper;
-import dev.compactmods.crafting.client.render.EnumCubeFaceCorner;
-import dev.compactmods.crafting.client.render.RotationSpeed;
+import dev.compactmods.crafting.client.render.*;
 import dev.compactmods.crafting.projector.EnumProjectorColorType;
 import dev.compactmods.crafting.projector.FieldProjectorBlock;
 import dev.compactmods.crafting.projector.FieldProjectorEntity;
@@ -37,6 +31,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.util.LazyOptional;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjectorEntity> {
 
@@ -109,17 +107,17 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
         Direction facing = state.getValue(FieldProjectorBlock.FACING);
         if (facing != Direction.WEST) {
             float angle = facing.toYRot() - 90;
-            mx.mulPose(Vector3f.YN.rotationDegrees(angle));
+            mx.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(angle), new Vector3f(0, -1, 0)));
         }
 
         float yDiskOffset = -0.66f;
         mx.translate(0.0, -yDiskOffset, 0.0);
-        mx.mulPose(Vector3f.ZP.rotationDegrees((float) yaw));
+        mx.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(yaw), new Vector3f(0, 0, 1)));
         mx.translate(0.0, yDiskOffset, 0.0);
 
         mx.translate(-.5, 0, -.5);
 
-        int faceColor = getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
+        int faceColor = MiniaturizationFieldRenderer.getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
         float red = FastColor.ARGB32.red(faceColor) / 255f;
         float green = FastColor.ARGB32.green(faceColor) / 255f;
         float blue = FastColor.ARGB32.blue(faceColor) / 255f;

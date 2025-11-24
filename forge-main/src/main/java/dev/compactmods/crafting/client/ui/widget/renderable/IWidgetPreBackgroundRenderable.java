@@ -1,7 +1,7 @@
 package dev.compactmods.crafting.client.ui.widget.renderable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 
 public interface IWidgetPreBackgroundRenderable {
-    void renderPreBackground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks);
+    void renderPreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks);
 }

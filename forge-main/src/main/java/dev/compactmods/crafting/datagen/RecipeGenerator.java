@@ -3,27 +3,24 @@ package dev.compactmods.crafting.datagen;
 import java.util.function.Consumer;
 import dev.compactmods.crafting.core.CCItems;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
 public class RecipeGenerator extends RecipeProvider {
     public RecipeGenerator(DataGenerator gen) {
-        super(gen);
+        super(gen.getPackOutput());
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-        ShapelessRecipeBuilder.shapeless(CCItems.FIELD_PROJECTOR_ITEM.get(), 1)
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, CCItems.FIELD_PROJECTOR_ITEM.get(), 1)
                 .requires(CCItems.BASE_ITEM.get())
                 .requires(CCItems.PROJECTOR_DISH_ITEM.get())
                 .unlockedBy("got_ender_eye", has(Items.ENDER_EYE))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(CCItems.BASE_ITEM.get(), 4)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,CCItems.BASE_ITEM.get(), 4)
                 .pattern(" R ")
                 .pattern("DSD")
                 .pattern("PPP")
@@ -34,7 +31,7 @@ public class RecipeGenerator extends RecipeProvider {
                 .unlockedBy("got_ender_eye", has(Items.ENDER_EYE))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(CCItems.PROJECTOR_DISH_ITEM.get(), 4)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,CCItems.PROJECTOR_DISH_ITEM.get(), 4)
                 .pattern("GI ")
                 .pattern("GEI")
                 .pattern("GI ")
@@ -44,13 +41,13 @@ public class RecipeGenerator extends RecipeProvider {
                 .unlockedBy("got_ender_eye", has(Items.ENDER_EYE))
                 .save(consumer);
 
-        ShapelessRecipeBuilder.shapeless(CCItems.MATCH_PROXY_ITEM.get())
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, CCItems.MATCH_PROXY_ITEM.get(), 1)
                 .requires(CCItems.BASE_ITEM.get())
                 .requires(Items.REDSTONE)
                 .unlockedBy("got_redstone", has(Items.REDSTONE))
                 .save(consumer);
 
-        ShapelessRecipeBuilder.shapeless(CCItems.RESCAN_PROXY_ITEM.get())
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, CCItems.RESCAN_PROXY_ITEM.get(), 1)
                 .requires(CCItems.BASE_ITEM.get())
                 .requires(Items.CRAFTING_TABLE)
                 .unlockedBy("got_crafting_table", has(Items.CRAFTING_TABLE))

@@ -114,9 +114,9 @@ public abstract class BlockSpaceUtil {
      */
     public static BlockPos normalizeLayerPosition(AABB fieldBounds, BlockPos pos) {
         return new BlockPos(
-                pos.getX() - fieldBounds.minX,
-                pos.getY() - fieldBounds.minY,
-                pos.getZ() - fieldBounds.minZ
+                pos.getX() - (int) fieldBounds.minX,
+                pos.getY() - (int) fieldBounds.minY,
+                pos.getZ() - (int) fieldBounds.minZ
         );
     }
 
@@ -138,9 +138,9 @@ public abstract class BlockSpaceUtil {
 
     public static BlockPos denormalizeLayerPosition(AABB realBounds, BlockPos normPos) {
         return new BlockPos(
-                realBounds.minX + normPos.getX(),
-                realBounds.minY + normPos.getY(),
-                realBounds.minZ + normPos.getZ()
+                (int) realBounds.minX + normPos.getX(),
+                (int) realBounds.minY + normPos.getY(),
+                (int) realBounds.minZ + normPos.getZ()
         );
     }
 
@@ -184,7 +184,7 @@ public abstract class BlockSpaceUtil {
     }
 
     public static BlockPos getOffset(AABB bounds) {
-        return new BlockPos(bounds.minX, bounds.minY, bounds.maxZ);
+        return new BlockPos((int) bounds.minX, (int) bounds.minY, (int) bounds.maxZ);
     }
 
     public static Stream<BlockPos> getCornersOfBounds(AABB bounds) {
@@ -192,16 +192,16 @@ public abstract class BlockSpaceUtil {
         Set<BlockPos> positions = new HashSet<>(upperRequired ? 8 : 4);
 
         // Lower corners
-        positions.add(new BlockPos(bounds.minX, bounds.minY, bounds.minZ));
-        positions.add(new BlockPos(bounds.minX, bounds.minY, bounds.maxZ - 1));
-        positions.add(new BlockPos(bounds.maxX - 1, bounds.minY, bounds.minZ));
-        positions.add(new BlockPos(bounds.maxX - 1, bounds.minY, bounds.maxZ - 1));
+        positions.add(new BlockPos((int) bounds.minX, (int) bounds.minY, (int) bounds.minZ));
+        positions.add(new BlockPos((int) bounds.minX, (int) bounds.minY, (int) bounds.maxZ - 1));
+        positions.add(new BlockPos((int) bounds.maxX - 1, (int) bounds.minY, (int) bounds.minZ));
+        positions.add(new BlockPos((int) bounds.maxX - 1, (int) bounds.minY, (int) bounds.maxZ - 1));
 
         if(upperRequired) {
-            positions.add(new BlockPos(bounds.minX, bounds.maxY - 1, bounds.minZ));
-            positions.add(new BlockPos(bounds.minX, bounds.maxY - 1, bounds.maxZ - 1));
-            positions.add(new BlockPos(bounds.maxX - 1, bounds.maxY - 1, bounds.minZ));
-            positions.add(new BlockPos(bounds.maxX - 1, bounds.maxY - 1, bounds.maxZ - 1));
+            positions.add(new BlockPos((int) bounds.minX, (int) bounds.maxY - 1, (int) bounds.minZ));
+            positions.add(new BlockPos((int) bounds.minX, (int) bounds.maxY - 1, (int) bounds.maxZ - 1));
+            positions.add(new BlockPos((int) bounds.maxX - 1, (int) bounds.maxY - 1, (int) bounds.minZ));
+            positions.add(new BlockPos((int) bounds.maxX - 1, (int) bounds.maxY - 1, (int) bounds.maxZ - 1));
         }
 
         return positions.stream();

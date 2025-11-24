@@ -1,10 +1,10 @@
 package dev.compactmods.crafting.client.ui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.components.Widget;
 
-public abstract class WidgetBase implements Widget, GuiEventListener {
+public abstract class WidgetBase implements Renderable, GuiEventListener {
     protected final int width;
     protected final int height;
 
@@ -14,5 +14,5 @@ public abstract class WidgetBase implements Widget, GuiEventListener {
     }
 
     @Override
-    public abstract void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks);
+    public abstract void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks);
 }

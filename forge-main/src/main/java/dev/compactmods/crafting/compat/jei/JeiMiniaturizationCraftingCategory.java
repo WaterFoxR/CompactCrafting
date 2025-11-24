@@ -9,8 +9,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
@@ -34,7 +32,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -55,6 +53,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
 
 public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<MiniaturizationRecipe> {
@@ -290,7 +290,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
     //region Rendering help
     private void drawScaledTexture(
-            PoseStack matrixStack,
+            GuiGraphics guiGraphics,
             ResourceLocation texture,
             ScreenArea area,
             float u, float v,
@@ -302,23 +302,24 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         RenderSystem.setShaderTexture(0, texture);
 
         RenderSystem.enableDepthTest();
-        GuiComponent.blit(matrixStack, area.x, area.y, area.width, area.height, u, v, uWidth, vHeight, textureWidth, textureHeight);
+        guiGraphics.blit(texture, area.x, area.y, area.width, area.height, u, v, uWidth, vHeight, textureWidth, textureHeight);
     }
 
     //endregion
 
     @Override
-    public void draw(MiniaturizationRecipe recipe, IRecipeSlotsView slots, PoseStack pose, double mouseX, double mouseY) {
+    public void draw(MiniaturizationRecipe recipe, IRecipeSlotsView slots, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        PoseStack pose = guiGraphics.pose();
         AABB dims = recipe.getDimensions();
 
         Window mainWindow = Minecraft.getInstance().getWindow();
 
-        drawScaledTexture(pose,
+        drawScaledTexture(guiGraphics,
                 new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-arrow-field.png"),
                 new ScreenArea(7, 20, 17, 22),
                 0, 0, 17, 22, 17, 22);
 
-        drawScaledTexture(pose,
+        drawScaledTexture(guiGraphics,
                 new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-arrow-outputs.png"),
                 new ScreenArea(100, 25, 24, 19),
                 0, 0, 24, 19, 24, 19);
@@ -333,27 +334,28 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
                 70
         );
 
-        renderPreviewControls(pose, dims);
+        renderPreviewControls(guiGraphics, dims);
 
-        if (previewLevel != null) renderRecipe(recipe, pose, dims, guiScaleFactor, scissorBounds);
+        if (previewLevel != null) renderRecipe(recipe, guiGraphics, dims, guiScaleFactor, scissorBounds);
     }
 
-    private void renderRecipe(MiniaturizationRecipe recipe, PoseStack mx, AABB dims, double guiScaleFactor, ScreenArea scissorBounds) {
+    private void renderRecipe(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, AABB dims, double guiScaleFactor, ScreenArea scissorBounds) {
         try {
-            GuiComponent.fill(
-                    mx,
+            guiGraphics.fill(
                     scissorBounds.x, scissorBounds.y,
                     scissorBounds.x + scissorBounds.width,
                     scissorBounds.height,
                     0xFF404040
             );
 
+            PoseStack mx = guiGraphics.pose();
+
             MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 
             final double scale = Minecraft.getInstance().getWindow().getGuiScale();
             final Matrix4f matrix = mx.last().pose();
             final FloatBuffer buf = BufferUtils.createFloatBuffer(16);
-            matrix.store(buf);
+            matrix.get(buf);
 
             // { x, y, z }
             Vec3 translation = new Vec3(
@@ -398,10 +400,10 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
     private void drawActualRecipe(MiniaturizationRecipe recipe, PoseStack mx, AABB dims, MultiBufferSource.BufferSource buffers) {
         double gameTime = Minecraft.getInstance().level.getGameTime();
         double test = Math.toDegrees(gameTime) / 15;
-        mx.mulPose(new Quaternion(35f,
-                (float) -test,
-                0,
-                true));
+        mx.mulPose(new Quaternionf().rotationXYZ(
+                35f * ((float) Math.PI / 180f),
+                (float) -test * ((float) Math.PI / 180f),
+                0));
 
         double ySize = recipe.getDimensions().getYsize();
 
@@ -426,31 +428,32 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         }
     }
 
-    private void renderPreviewControls(PoseStack mx, AABB dims) {
+    private void renderPreviewControls(GuiGraphics guiGraphics, AABB dims) {
+        PoseStack mx = guiGraphics.pose();
         mx.pushPose();
         mx.translate(0, 0, 10);
 
         ResourceLocation sprites = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-sprites.png");
 
         if (exploded) {
-            drawScaledTexture(mx, sprites, explodeToggle, 20, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, explodeToggle, 20, 0, 20, 20, 120, 20);
         } else {
-            drawScaledTexture(mx, sprites, explodeToggle, 0, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, explodeToggle, 0, 0, 20, 20, 120, 20);
         }
 
         // Layer change buttons
         if (singleLayer) {
-            drawScaledTexture(mx, sprites, layerSwap, 60, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, layerSwap, 60, 0, 20, 20, 120, 20);
         } else {
-            drawScaledTexture(mx, sprites, layerSwap, 40, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, layerSwap, 40, 0, 20, 20, 120, 20);
         }
 
         if (singleLayer) {
             if (singleLayerOffset < dims.getYsize() - 1)
-                drawScaledTexture(mx, sprites, layerUp, 80, 0, 20, 20, 120, 20);
+                drawScaledTexture(guiGraphics, sprites, layerUp, 80, 0, 20, 20, 120, 20);
 
             if (singleLayerOffset > 0) {
-                drawScaledTexture(mx, sprites, layerDown, 100, 0, 20, 20, 120, 20);
+                drawScaledTexture(guiGraphics, sprites, layerDown, 100, 0, 20, 20, 120, 20);
             }
         }
 

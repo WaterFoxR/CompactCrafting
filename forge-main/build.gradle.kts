@@ -6,8 +6,8 @@ plugins {
     id("idea")
     id("eclipse")
     id("maven-publish")
-    id("net.minecraftforge.gradle") version ("5.1.+")
-    id("org.parchmentmc.librarian.forgegradle") version ("1.+")
+    id("net.minecraftforge.gradle") version "6.0.+"
+    id("org.parchmentmc.librarian.forgegradle") version "1.+"
 }
 
 var envVersion: String = System.getenv("CC_VERSION") ?: "9.9.9"
@@ -115,7 +115,7 @@ minecraft {
             args("--output", file("src/generated/resources/"))
             args("--existing", file("src/main/resources"))
 
-            forceExit(false)
+//            forceExit(false)
         }
 
         create("gameTestServer") {
@@ -123,7 +123,7 @@ minecraft {
             workingDirectory(file("run/gametest"))
             environment("CC_TEST_RESOURCES", file("src/test/resources"))
 
-            forceExit(false)
+//            forceExit(false)
 
             mods.named(mod_id) {
                 source(sourceSets.test.get())
@@ -141,7 +141,17 @@ repositories {
         }
     }
 
-    // location of the maven that hosts JEI files
+    // 使用更稳定的JEI仓库镜像
+    maven("https://maven.blamejared.com") {
+        name = "BlameJared"
+    }
+
+    // 备用JEI仓库
+    maven("https://modmaven.dev") {
+        name = "ModMaven"
+    }
+
+    // 原始仓库（备用）
     maven("https://dvs1.progwml6.com/files/maven") {
         name = "Progwml Repo"
     }
@@ -171,10 +181,13 @@ dependencies {
     runtimeOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"))
 
     // The One Probe
-    implementation(fg.deobf("curse.maven:theoneprobe-245211:3871444"))
+    implementation(fg.deobf("curse.maven:theoneprobe-245211:6106996"))
+
+    // Jade
+    implementation(fg.deobf("curse.maven:jade-324717:6855440"))
 
     // Spark
-    runtimeOnly(fg.deobf("curse.maven:spark-361579:3875647"))
+    runtimeOnly(fg.deobf("curse.maven:spark-361579:4738952"))
 }
 
 tasks.withType<ProcessResources> {

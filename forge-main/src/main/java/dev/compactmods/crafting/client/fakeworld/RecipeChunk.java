@@ -10,6 +10,7 @@ import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
@@ -26,7 +27,7 @@ public class RecipeChunk extends EmptyLevelChunk {
     private final Map<BlockPos, BlockEntity> tileCache;
 
     public RecipeChunk(RenderingWorld renderingLevel, ChunkPos chunkPos, MiniaturizationRecipe recipe) {
-        super(renderingLevel, chunkPos, ForgeRegistries.BIOMES.getHolder(Biomes.THE_VOID).get());
+        super(renderingLevel, chunkPos, renderingLevel.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID));
         this.recipe = recipe;
 
         this.blockCache = new HashMap<>();

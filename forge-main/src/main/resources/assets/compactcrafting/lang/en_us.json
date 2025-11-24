@@ -16,6 +16,14 @@
   "compactcrafting.top.awaiting_catalyst": "Awaiting catalyst...",
   "compactcrafting.top.progress": "%s / %s",
 
+  "config.jade.plugin_compactcrafting.field_projector": "Field Projector",
+  "config.jade.plugin_compactcrafting.field_proxy": "Field Proxy",
+  "compactcrafting.jade.current_recipe": "Current Recipe",
+  "compactcrafting.jade.catalyst": "Catalyst",
+  "compactcrafting.jade.output": "Output",
+  "compactcrafting.jade.awaiting_catalyst": "Awaiting catalyst...",
+  "compactcrafting.jade.progress": "Progress: %s / %s",
+
   "tooltip.compactcrafting.proxy_bound": "Bound to: %s",
   "tooltip.compactcrafting.proxy_hint": "Use proxies for field automation with redstone.",
   "tooltip.compactcrafting.proxy_bind_hint": "Shift-use on a projector to bind to a field.",
