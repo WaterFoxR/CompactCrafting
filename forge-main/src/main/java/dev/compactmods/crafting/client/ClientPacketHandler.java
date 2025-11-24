@@ -52,7 +52,7 @@ public abstract class ClientPacketHandler {
         if (mc.level == null)
             return;
 
-        MiniaturizationField field = MiniaturizationField.fromNBT(mc.level, fieldData);;
+        MiniaturizationField field = MiniaturizationField.fromNBT(mc.level, fieldData);
         field.setLevel(mc.level);
         field.loadClientData(fieldData);
 

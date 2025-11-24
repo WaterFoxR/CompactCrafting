@@ -22,7 +22,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class GhostRenderer {
     public static void render(BlockState state,@Nullable BlockPos pos,PoseStack matrixStack){

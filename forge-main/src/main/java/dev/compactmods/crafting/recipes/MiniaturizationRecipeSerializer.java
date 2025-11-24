@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.compactmods.crafting.CompactCrafting;
-import dev.compactmods.crafting.server.ServerConfig;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;

@@ -12,7 +12,7 @@ plugins {
 
 var envVersion: String = System.getenv("CC_VERSION") ?: "9.9.9"
 if(envVersion.startsWith("v"))
-    envVersion = envVersion.trimStart('v');
+    envVersion = envVersion.trimStart('v')
 
 var mod_id: String by extra
 val isRelease: Boolean = (System.getenv("CC_RELEASE") ?: "false").equals("true", true)

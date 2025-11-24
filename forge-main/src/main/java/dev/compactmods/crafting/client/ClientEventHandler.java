@@ -9,7 +9,6 @@ import dev.compactmods.crafting.api.field.IActiveWorldFields;
 import dev.compactmods.crafting.api.field.IMiniaturizationField;
 import dev.compactmods.crafting.api.projector.IProjectorRenderInfo;
 import dev.compactmods.crafting.api.recipe.IMiniaturizationRecipe;
-import dev.compactmods.crafting.client.render.GhostRenderer;
 import dev.compactmods.crafting.core.CCCapabilities;
 import dev.compactmods.crafting.field.render.CraftingPreviewRenderer;
 import net.minecraft.client.Camera;

@@ -13,7 +13,6 @@ import dev.compactmods.crafting.field.render.CraftingPreviewRenderer;
 import dev.compactmods.crafting.projector.EnumProjectorColorType;
 import dev.compactmods.crafting.projector.FieldProjectorBlock;
 import dev.compactmods.crafting.projector.FieldProjectorEntity;
-import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;

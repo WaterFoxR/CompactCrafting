@@ -65,7 +65,7 @@ public enum JadeFieldProjectorProvider implements IBlockComponentProvider, IServ
                 //添加进度条
                 boolean b = false;
                 int progress = 0;
-                int totalTime = 0;
+                int totalTime;
                 if (serverData.contains("progress") && serverData.contains("totalTime")){
                     b=true;
                     progress = serverData.getInt("progress");

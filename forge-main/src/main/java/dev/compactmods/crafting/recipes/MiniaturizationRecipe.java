@@ -33,7 +33,6 @@ import dev.compactmods.crafting.util.BlockSpaceUtil;
 import dev.compactmods.crafting.util.CodecExtensions;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;

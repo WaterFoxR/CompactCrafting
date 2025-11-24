@@ -9,7 +9,6 @@ import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biomes;
@@ -19,7 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class RecipeChunk extends EmptyLevelChunk {
     private final MiniaturizationRecipe recipe;
@@ -83,5 +81,9 @@ public class RecipeChunk extends EmptyLevelChunk {
     @Override
     public BlockEntity getBlockEntity(BlockPos pos, EntityCreationType createType) {
         return tileCache.get(pos);
+    }
+
+    public MiniaturizationRecipe getRecipe() {
+        return recipe;
     }
 }

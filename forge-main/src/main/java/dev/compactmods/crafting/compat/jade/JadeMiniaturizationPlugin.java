@@ -4,7 +4,6 @@ import dev.compactmods.crafting.compat.jade.providers.JadeFieldProjectorProvider
 import dev.compactmods.crafting.compat.jade.providers.JadeFieldProxyProvider;
 import dev.compactmods.crafting.projector.FieldProjectorBlock;
 import dev.compactmods.crafting.projector.FieldProjectorEntity;
-import dev.compactmods.crafting.proxies.block.FieldProxyBlock;
 import dev.compactmods.crafting.proxies.block.MatchFieldProxyBlock;
 import dev.compactmods.crafting.proxies.block.RescanFieldProxyBlock;
 import dev.compactmods.crafting.proxies.data.MatchFieldProxyEntity;

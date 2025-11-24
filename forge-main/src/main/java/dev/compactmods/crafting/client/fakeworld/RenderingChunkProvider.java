@@ -21,7 +21,6 @@ import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.lighting.LevelLightEngine;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class RenderingChunkProvider extends ChunkSource {
     private final Holder<Biome> VOID;

@@ -12,7 +12,7 @@ plugins {
 
 var envVersion: String = System.getenv("CC_VERSION") ?: "9.9.9"
 if(envVersion.startsWith("v"))
-    envVersion = envVersion.trimStart('v');
+    envVersion = envVersion.trimStart('v')
 
 val mod_id: String by extra
 val isRelease: Boolean = (System.getenv("CC_RELEASE") ?: "false").equals("true", true)
@@ -27,8 +27,8 @@ base {
     version = envVersion
 }
 
-println("Mod ID: $mod_id");
-println("Version: $envVersion");
+println("Mod ID: $mod_id")
+println("Version: $envVersion")
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
@@ -195,7 +195,7 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.compileJava {
-    options.encoding = "UTF-8";
+    options.encoding = "UTF-8"
 }
 
 reobf {
@@ -204,7 +204,7 @@ reobf {
 
 tasks.withType<Jar> {
     // TODO - Switch to API jar when JarInJar supports it better
-    val api = project(":forge-api").tasks.jar.get().archiveFile;
+    val api = project(":forge-api").tasks.jar.get().archiveFile
     from(api.map { zipTree(it) })
 
     manifest {

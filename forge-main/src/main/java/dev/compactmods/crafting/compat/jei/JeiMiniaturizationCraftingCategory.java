@@ -15,7 +15,6 @@ import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
 import dev.compactmods.crafting.client.fakeworld.RenderingWorld;
 import dev.compactmods.crafting.client.ui.ScreenArea;
 import dev.compactmods.crafting.core.CCBlocks;
-import dev.compactmods.crafting.core.CCMiniaturizationRecipes;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import dev.compactmods.crafting.recipes.components.BlockComponent;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
