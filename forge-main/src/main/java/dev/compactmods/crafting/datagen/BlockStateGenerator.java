@@ -38,18 +38,18 @@ public class BlockStateGenerator extends BlockStateProvider {
 
     private void baseModel() {
         BlockModelBuilder builder = models().getBuilder("block/base")
-                .texture("particle", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_base_bottom"));
+                .texture("particle", CompactCrafting.modRL("block/projector_base_bottom"));
 
         addProjectorBase(builder);
     }
 
     static void addProjectorBase(BlockModelBuilder builder) {
         builder
-                .texture("base_top", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_base_top"))
-                .texture("base_top_cutout", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_base_top_cutout"))
-                .texture("base_bottom", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_base_bottom"))
-                .texture("base_side", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_base_side"))
-                .texture("pole", new ResourceLocation(CompactCrafting.MOD_ID, "block/projector_pole"));
+                .texture("base_top", CompactCrafting.modRL("block/projector_base_top"))
+                .texture("base_top_cutout", CompactCrafting.modRL("block/projector_base_top_cutout"))
+                .texture("base_bottom", CompactCrafting.modRL("block/projector_base_bottom"))
+                .texture("base_side", CompactCrafting.modRL("block/projector_base_side"))
+                .texture("pole", CompactCrafting.modRL("block/projector_pole"));
 
         // Base
         builder.element()

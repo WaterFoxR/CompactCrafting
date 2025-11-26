@@ -8,14 +8,10 @@ public class DirectionUtil {
 
     @Nonnull
     public static Direction.Axis getCrossDirectionAxis(Direction.Axis originalAxis) {
-        switch (originalAxis) {
-            case X:
-                return Direction.Axis.Z;
-
-            case Z:
-                return Direction.Axis.X;
-        }
-
-        return originalAxis;
+        return switch (originalAxis) {
+            case X -> Direction.Axis.Z;
+            case Z -> Direction.Axis.X;
+            default -> originalAxis;
+        };
     }
 }

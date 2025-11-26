@@ -1,6 +1,6 @@
 # Component Specification v1
 
-```json
+```text
 "components": [
     "{key}": { 
         /* component definition */

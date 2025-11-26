@@ -24,7 +24,7 @@ public class TabsWidget extends WidgetBase implements
         GuiEventListener,
         IWidgetPreBackgroundRenderable, IWidgetPostBackgroundRenderable {
 
-    protected final ResourceLocation TEXTURE = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/widget/tabs.png");
+    protected final ResourceLocation TEXTURE = CompactCrafting.modRL("textures/gui/widget/tabs.png");
     protected final int ARROW_OFFSET_X = 130;
     protected final int ARROW_OFFSET_Y = 0;
 
@@ -86,18 +86,14 @@ public class TabsWidget extends WidgetBase implements
 
     protected Vec3 getRealRelativePos(double mouseX, double mouseY) {
         double realX = mouseX;
-        double realY = mouseY;
-        switch (screenSide) {
-            case TOP:
+        double realY = switch (screenSide) {
+            case TOP ->
                 // Tabs on the top are offset above the widget container
-                realY = mouseY + 28;
-                break;
-
-            case BOTTOM:
+                    mouseY + 28;
+            case BOTTOM ->
                 // Tabs on the bottom are offset below the widget container
-                realY = parentHeight - mouseY + 28;
-                break;
-        }
+                    parentHeight - mouseY + 28;
+        };
 
         return new Vec3(realX, realY, 0);
     }

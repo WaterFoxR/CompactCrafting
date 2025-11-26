@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = CompactCrafting.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CCCatalystTypes {
 
-    public static final ResourceLocation CATALYSTS_RL = new ResourceLocation(CompactCrafting.MOD_ID, "catalyst_types");
+    public static final ResourceLocation CATALYSTS_RL = CompactCrafting.modRL("catalyst_types");
 
     public static DeferredRegister<CatalystType<?>> CATALYSTS = DeferredRegister.create(CATALYSTS_RL, CompactCrafting.MOD_ID);
 

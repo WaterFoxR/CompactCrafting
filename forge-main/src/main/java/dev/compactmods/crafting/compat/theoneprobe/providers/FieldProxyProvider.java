@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FieldProxyProvider implements IProbeInfoProvider {
-    private static final ResourceLocation ID = new ResourceLocation(CompactCrafting.MOD_ID, "field_proxy");
+    private static final ResourceLocation ID = CompactCrafting.modRL("field_proxy");
 
     @Override
     public ResourceLocation getID() {

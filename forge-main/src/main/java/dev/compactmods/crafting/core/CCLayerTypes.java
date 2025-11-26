@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public class CCLayerTypes {
 
-    public static final ResourceLocation REC_LAYERS = new ResourceLocation(CompactCrafting.MOD_ID, "recipe_layers");
+    public static final ResourceLocation REC_LAYERS = CompactCrafting.modRL("recipe_layers");
 
     public static DeferredRegister<RecipeLayerType<?>> RECIPE_LAYERS = DeferredRegister.create(REC_LAYERS, CompactCrafting.MOD_ID);
 

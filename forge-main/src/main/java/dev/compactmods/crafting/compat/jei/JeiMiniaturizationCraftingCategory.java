@@ -58,7 +58,7 @@ import org.lwjgl.BufferUtils;
 
 public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<MiniaturizationRecipe> {
 
-    public static final ResourceLocation UID = new ResourceLocation(CompactCrafting.MOD_ID, "miniaturization");
+    public static final ResourceLocation UID = CompactCrafting.modRL("miniaturization");
     public static final RecipeType<MiniaturizationRecipe> RECIPE_TYPE = new RecipeType<>(UID, MiniaturizationRecipe.class);
 
     private final IDrawable icon;
@@ -105,7 +105,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         this.background = guiHelper.createBlankDrawable(width, height);
         this.slotDrawable = guiHelper.getSlotDrawable();
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(CCBlocks.FIELD_PROJECTOR_BLOCK.get()));
-        this.arrowOutputs = guiHelper.createDrawable(new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-arrow-outputs.png"), 0, 0, 24, 19);
+        this.arrowOutputs = guiHelper.createDrawable(CompactCrafting.modRL("textures/gui/jei-arrow-outputs.png"), 0, 0, 24, 19);
 
         this.blocks = Minecraft.getInstance().getBlockRenderer();
         this.previewLevel = null;
@@ -314,12 +314,12 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         Window mainWindow = Minecraft.getInstance().getWindow();
 
         drawScaledTexture(guiGraphics,
-                new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-arrow-field.png"),
+                CompactCrafting.modRL("textures/gui/jei-arrow-field.png"),
                 new ScreenArea(7, 20, 17, 22),
                 0, 0, 17, 22, 17, 22);
 
         drawScaledTexture(guiGraphics,
-                new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-arrow-outputs.png"),
+                CompactCrafting.modRL("textures/gui/jei-arrow-outputs.png"),
                 new ScreenArea(100, 25, 24, 19),
                 0, 0, 24, 19, 24, 19);
 
@@ -368,8 +368,8 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             scissorBounds.height *= scale;
             final int scissorX = Math.round(Math.round(translation.x + scissorBounds.x));
             final int scissorY = Math.round(Math.round(Minecraft.getInstance().getWindow().getHeight() - scissorBounds.y - scissorBounds.height - translation.y));
-            final int scissorW = Math.round(scissorBounds.width);
-            final int scissorH = Math.round(scissorBounds.height);
+            final int scissorW = scissorBounds.width;
+            final int scissorH = scissorBounds.height;
             RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
 
             mx.pushPose();
@@ -432,7 +432,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         mx.pushPose();
         mx.translate(0, 0, 10);
 
-        ResourceLocation sprites = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/jei-sprites.png");
+        ResourceLocation sprites = CompactCrafting.modRL("textures/gui/jei-sprites.png");
 
         if (exploded) {
             drawScaledTexture(guiGraphics, sprites, explodeToggle, 20, 0, 20, 20, 120, 20);

@@ -18,7 +18,7 @@ public class ActiveWorldFieldsAttacher {
         ActiveWorldFields inst = new ActiveWorldFields(level);
         final LevelFieldsProvider provider = new LevelFieldsProvider(inst);
 
-        event.addCapability(new ResourceLocation(CompactCrafting.MOD_ID, "fields"), provider);
+        event.addCapability(CompactCrafting.modRL("fields"), provider);
 
         event.addListener(provider::invalidate);
     }

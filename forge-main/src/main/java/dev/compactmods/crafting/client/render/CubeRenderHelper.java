@@ -143,21 +143,12 @@ public abstract class CubeRenderHelper {
                 break;
         }
 
-        switch (corner) {
-            case TOP_LEFT:
-                return TOP_LEFT;
-
-            case TOP_RIGHT:
-                return TOP_RIGHT;
-
-            case BOTTOM_LEFT:
-                return BOTTOM_LEFT;
-
-            case BOTTOM_RIGHT:
-                return BOTTOM_RIGHT;
-        }
-
-        return Vec3.ZERO;
+        return switch (corner) {
+            case TOP_LEFT -> TOP_LEFT;
+            case TOP_RIGHT -> TOP_RIGHT;
+            case BOTTOM_LEFT -> BOTTOM_LEFT;
+            case BOTTOM_RIGHT -> BOTTOM_RIGHT;
+        };
     }
 
     public static double getScanLineHeight(AABB cube, double gameTime) {

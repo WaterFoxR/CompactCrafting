@@ -8,6 +8,7 @@ import dev.compactmods.crafting.recipes.components.ComponentRegistration;
 import dev.compactmods.crafting.server.ServerConfig;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -45,14 +46,13 @@ public class CompactCrafting
                     })
                     .build());
 
-    public CompactCrafting() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CompactCrafting(FMLJavaModLoadingContext context) {
+        IEventBus modBus = context.getModEventBus();
 
         modBus.addListener(this::setup);
 
-        ModLoadingContext mlCtx = ModLoadingContext.get();
-        mlCtx.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CONFIG);
-        mlCtx.registerConfig(ModConfig.Type.SERVER, ServerConfig.CONFIG);
+        context.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CONFIG);
+        context.registerConfig(ModConfig.Type.SERVER, ServerConfig.CONFIG);
 
         CCBlocks.init(modBus);
         CCCatalystTypes.init(modBus);
@@ -68,5 +68,9 @@ public class CompactCrafting
     private void setup(final FMLCommonSetupEvent event)
     {
         NetworkHandler.initialize();
+    }
+
+    public static ResourceLocation modRL(String path) {
+        return ResourceLocation.tryBuild(MOD_ID, path);
     }
 }

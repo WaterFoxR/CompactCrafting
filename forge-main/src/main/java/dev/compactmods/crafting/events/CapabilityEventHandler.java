@@ -27,7 +27,7 @@ public class CapabilityEventHandler {
             ClientProjectorRenderInfo backend = new ClientProjectorRenderInfo();
             LazyOptional<IProjectorRenderInfo> renderData = LazyOptional.of(() -> backend);
 
-            event.addCapability(new ResourceLocation(CompactCrafting.MOD_ID, "projector_renderer"), new ICapabilityProvider() {
+            event.addCapability(CompactCrafting.modRL("projector_renderer"), new ICapabilityProvider() {
                 @Nonnull
                 @Override
                 public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

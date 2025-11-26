@@ -2,6 +2,7 @@ package dev.compactmods.crafting.projector.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.field.IMiniaturizationField;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
@@ -36,23 +37,22 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+@SuppressWarnings("NullableProblems")
 public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjectorEntity> {
 
-    public static final ResourceLocation FIELD_DISH_RL = new ResourceLocation(CompactCrafting.MOD_ID, "block/field_projector_dish");
+    public static final ResourceLocation FIELD_DISH_RL = CompactCrafting.modRL("block/field_projector_dish");
 
     private BakedModel bakedModelCached;
-
-    private LazyOptional<IMiniaturizationField> field = LazyOptional.empty();
 
     public FieldProjectorRenderer(BlockEntityRendererProvider.Context ctx) {
 
     }
 
     @Override
-    public void render(FieldProjectorEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffers, int combinedLightIn, int combinedOverlayIn) {
+    public void render(FieldProjectorEntity tile, float partialTicks, PoseStack mx, MultiBufferSource buffers, int combinedLightIn, int combinedOverlayIn) {
         long gameTime = tile.getLevel().getGameTime();
 
-        renderDish(tile, matrixStack, buffers, combinedLightIn, combinedOverlayIn, gameTime);
+        renderDish(tile, mx, buffers, combinedLightIn, combinedOverlayIn, gameTime);
 
         AABB bounds = tile.getField().map(field -> {
             double scale = MathUtil.calculateFieldScale(field);
@@ -64,13 +64,13 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
             return fieldSize.getBoundsAtPosition(center);
         });
 
-        matrixStack.pushPose();
-
-        drawScanLine(tile, matrixStack, buffers, bounds, gameTime);
-        drawFieldFace(tile, matrixStack, buffers, bounds);
-        drawProjectorArcs(tile, matrixStack, buffers, bounds, gameTime);
-
-        matrixStack.popPose();
+        mx.pushPose();
+        {
+            drawScanLine(tile, mx, buffers, bounds, gameTime);
+            drawFieldFace(tile, mx, buffers, bounds);
+            drawProjectorArcs(tile, mx, buffers, bounds, gameTime);
+        }
+        mx.popPose();
     }
 
     private BakedModel getModel() {
@@ -98,39 +98,39 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
         BakedModel baked = this.getModel();
 
         mx.pushPose();
+        {
+            mx.translate(.5, 0, .5);
 
-        mx.translate(.5, 0, .5);
+            double yaw = Math.sin(Math.toDegrees(gameTime) / RotationSpeed.MEDIUM.getSpeed()) * 10;
+            // double yaw = Math.random();
 
-        double yaw = Math.sin(Math.toDegrees(gameTime) / RotationSpeed.MEDIUM.getSpeed()) * 10;
-        // double yaw = Math.random();
+            Direction facing = state.getValue(FieldProjectorBlock.FACING);
+            if (facing != Direction.WEST) {
+                float angle = facing.toYRot() - 90;
+                mx.mulPose(Axis.YN.rotationDegrees(angle));
+            }
 
-        Direction facing = state.getValue(FieldProjectorBlock.FACING);
-        if (facing != Direction.WEST) {
-            float angle = facing.toYRot() - 90;
-            mx.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(angle), new Vector3f(0, -1, 0)));
+            float yDiskOffset = -0.66f;
+            mx.translate(0.0, -yDiskOffset, 0.0);
+            mx.mulPose(Axis.ZP.rotationDegrees((float) yaw));
+            mx.translate(0.0, yDiskOffset, 0.0);
+
+            mx.translate(-.5, 0, -.5);
+
+            int faceColor = MiniaturizationFieldRenderer.getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
+            float red = FastColor.ARGB32.red(faceColor) / 255f;
+            float green = FastColor.ARGB32.green(faceColor) / 255f;
+            float blue = FastColor.ARGB32.blue(faceColor) / 255f;
+
+            // TODO - Revisit render types
+            blockRenderer.getModelRenderer()
+                    .renderModel(mx.last(), cutoutBlocks, state,
+                            baked,
+                            red,
+                            green,
+                            blue,
+                            combinedLight, combinedOverlay, ModelData.EMPTY, null);
         }
-
-        float yDiskOffset = -0.66f;
-        mx.translate(0.0, -yDiskOffset, 0.0);
-        mx.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(yaw), new Vector3f(0, 0, 1)));
-        mx.translate(0.0, yDiskOffset, 0.0);
-
-        mx.translate(-.5, 0, -.5);
-
-        int faceColor = MiniaturizationFieldRenderer.getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
-        float red = FastColor.ARGB32.red(faceColor) / 255f;
-        float green = FastColor.ARGB32.green(faceColor) / 255f;
-        float blue = FastColor.ARGB32.blue(faceColor) / 255f;
-
-        // TODO - Revisit render types
-        blockRenderer.getModelRenderer()
-                .renderModel(mx.last(), cutoutBlocks, state,
-                        baked,
-                        red,
-                        green,
-                        blue,
-                        combinedLight, combinedOverlay, ModelData.EMPTY, null);
-
         mx.popPose();
     }
 
@@ -321,15 +321,9 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
         int green = FastColor.ARGB32.green(base);
         int blue = FastColor.ARGB32.blue(base);
 
-        switch (type) {
-            case FIELD:
-            case SCAN_LINE:
-                return FastColor.ARGB32.color(50, red, green, blue);
-
-            case PROJECTOR_FACE:
-                return FastColor.ARGB32.color(250, red, green, blue);
-        }
-
-        return 0x00FFFFFF;
+        return switch (type) {
+            case FIELD, SCAN_LINE -> FastColor.ARGB32.color(50, red, green, blue);
+            case PROJECTOR_FACE -> FastColor.ARGB32.color(250, red, green, blue);
+        };
     }
 }

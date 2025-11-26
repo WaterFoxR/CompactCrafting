@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec2;
 
 public class TestScreen extends ContainerWidgetScreen<TestContainer> implements IWidgetScreen {
 
-    private ResourceLocation GUI = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/edit-screen.png");
+    private ResourceLocation GUI = CompactCrafting.modRL("textures/gui/edit-screen.png");
     private final Player player;
 
     public TestScreen(TestContainer c, Inventory inv, Component name) {

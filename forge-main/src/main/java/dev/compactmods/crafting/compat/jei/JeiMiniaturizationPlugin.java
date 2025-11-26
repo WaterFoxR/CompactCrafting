@@ -23,7 +23,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 public class JeiMiniaturizationPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(CompactCrafting.MOD_ID, "miniaturization_crafting");
+        return CompactCrafting.modRL("miniaturization_crafting");
     }
 
     @Override
@@ -31,9 +31,9 @@ public class JeiMiniaturizationPlugin implements IModPlugin {
         registration.addRecipeCategories(new JeiMiniaturizationCraftingCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
-    @Override
-    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-    }
+//    @Override
+//    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+//    }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {

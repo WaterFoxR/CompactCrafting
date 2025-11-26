@@ -29,7 +29,7 @@ public enum JadeFieldProjectorProvider implements IBlockComponentProvider, IServ
 
     @Override
     public ResourceLocation getUid() {
-        return new ResourceLocation(CompactCrafting.MOD_ID, "field_projector");
+        return CompactCrafting.modRL( "field_projector");
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel MAIN_CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(CompactCrafting.MOD_ID, "main"),
+            CompactCrafting.modRL("main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals

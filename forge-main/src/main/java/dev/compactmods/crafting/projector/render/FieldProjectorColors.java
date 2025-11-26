@@ -16,15 +16,11 @@ public class FieldProjectorColors {
 
         @Override
         public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex) {
-            switch(tintIndex) {
-                case 0:
-                    return ClientConfig.projectorOffColor;
-
-                case 1:
-                    return 0xFF2494cd;
-            }
-
-            return 0x00000000;
+            return switch (tintIndex) {
+                case 0 -> ClientConfig.projectorOffColor;
+                case 1 -> 0xFF2494cd;
+                default -> 0x00000000;
+            };
         }
     }
 

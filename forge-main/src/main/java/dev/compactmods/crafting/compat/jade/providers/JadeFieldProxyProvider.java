@@ -20,7 +20,7 @@ public enum JadeFieldProxyProvider implements IBlockComponentProvider, IServerDa
 
     @Override
     public ResourceLocation getUid() {
-        return new ResourceLocation(CompactCrafting.MOD_ID, "field_proxy");
+        return CompactCrafting.modRL("field_proxy");
     }
 
     @Override

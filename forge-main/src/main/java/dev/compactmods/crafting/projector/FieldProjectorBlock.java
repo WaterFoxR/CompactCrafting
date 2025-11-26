@@ -33,10 +33,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
 
+@SuppressWarnings("NullableProblems")
 public class FieldProjectorBlock extends Block implements EntityBlock {
-
-//    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
-//    public static final EnumProperty<MiniaturizationFieldSize> SIZE = EnumProperty.create("field", MiniaturizationFieldSize.class);
 
     public static final DirectionProperty FACING = FieldProjectorProperties.FACING;
     public static final EnumProperty<MiniaturizationFieldSize> SIZE = FieldProjectorProperties.SIZE;
@@ -81,21 +79,13 @@ public class FieldProjectorBlock extends Block implements EntityBlock {
     public VoxelShape getShape(BlockState state, BlockGetter levelReader, BlockPos pos, CollisionContext ctx) {
         Direction dir = state.getValue(FieldProjectorBlock.FACING);
 
-        switch (dir) {
-            case WEST:
-                return Shapes.or(BASE, POLE, DISH_WEST);
-
-            case NORTH:
-                return Shapes.or(BASE, POLE, DISH_NORTH);
-
-            case EAST:
-                return Shapes.or(BASE, POLE, DISH_EAST);
-
-            case SOUTH:
-                return Shapes.or(BASE, POLE, DISH_SOUTH);
-        }
-
-        return Shapes.or(BASE, POLE);
+        return switch (dir) {
+            case WEST -> Shapes.or(BASE, POLE, DISH_WEST);
+            case NORTH -> Shapes.or(BASE, POLE, DISH_NORTH);
+            case EAST -> Shapes.or(BASE, POLE, DISH_EAST);
+            case SOUTH -> Shapes.or(BASE, POLE, DISH_SOUTH);
+            default -> Shapes.or(BASE, POLE);
+        };
     }
 
     @Override
@@ -246,6 +236,7 @@ public class FieldProjectorBlock extends Block implements EntityBlock {
 
     // only called on the server
     @Override
+    @SuppressWarnings("deprecation")
     public void onRemove(BlockState oldState, Level level, BlockPos pos, BlockState newState, boolean p_196243_5_) {
         final BlockPos fieldCenter = getFieldCenter(oldState, pos);
         final MiniaturizationFieldSize fieldSize = oldState.getValue(SIZE);
@@ -270,6 +261,7 @@ public class FieldProjectorBlock extends Block implements EntityBlock {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block changer, BlockPos changedPos, boolean update) {
         super.neighborChanged(state, level, pos, changer, changedPos, update);
         if (level.isClientSide)
@@ -277,8 +269,7 @@ public class FieldProjectorBlock extends Block implements EntityBlock {
 
         if (isActive(state)) {
             BlockEntity tile = level.getBlockEntity(pos);
-            if (tile instanceof FieldProjectorEntity) {
-                FieldProjectorEntity fpt = (FieldProjectorEntity) tile;
+            if (tile instanceof FieldProjectorEntity fpt) {
                 if (level.getBestNeighborSignal(pos) > 0) {
                     // receiving power from some side, turn off rendering
                     fpt.getField().ifPresent(IMiniaturizationField::disable);
@@ -291,9 +282,9 @@ public class FieldProjectorBlock extends Block implements EntityBlock {
             // not active, but we may be re-enabling a disabled field
             ProjectorHelper.getClosestOppositeSize(level, pos).ifPresent(size -> {
                 final BlockPos center = size.getCenterFromProjector(pos, state.getValue(FACING));
-                level.getCapability(CCCapabilities.FIELDS).ifPresent(fields -> {
-                    fields.get(center).ifPresent(IMiniaturizationField::checkRedstone);
-                });
+                level.getCapability(CCCapabilities.FIELDS).ifPresent(fields ->
+                    fields.get(center).ifPresent(IMiniaturizationField::checkRedstone)
+                );
             });
         }
     }

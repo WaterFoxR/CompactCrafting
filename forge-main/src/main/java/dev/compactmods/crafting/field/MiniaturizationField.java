@@ -29,6 +29,7 @@ import dev.compactmods.crafting.util.BlockSpaceUtil;
 import io.reactivex.rxjava3.disposables.Disposable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -54,6 +55,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class MiniaturizationField implements IMiniaturizationField {
 
@@ -105,7 +107,7 @@ public class MiniaturizationField implements IMiniaturizationField {
 
         // temp load recipe
         if (nbt.contains("recipe")) {
-            this.recipeId = new ResourceLocation(nbt.getString("recipe"));
+            this.recipeId = ResourceLocation.tryParse(nbt.getString("recipe"));
             this.craftingProgress = nbt.getInt("progress");
         }
 

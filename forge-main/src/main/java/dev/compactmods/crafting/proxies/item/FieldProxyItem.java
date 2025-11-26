@@ -60,7 +60,7 @@ public class FieldProxyItem extends BlockItem {
         ItemStack stack = player.getItemInHand(hand);
         if(player.isDiscrete() && hand == InteractionHand.MAIN_HAND) {
             // used in the air while sneaking
-            player.displayClientMessage(Component.literal("clearing field data"), true);
+            player.displayClientMessage(Component.translatable("tooltip.compactcrafting.proxy_clear_data"), true);
 
             // clear field position
             stack.removeTagKey("field");
@@ -85,7 +85,7 @@ public class FieldProxyItem extends BlockItem {
 
             // if used on a projector while sneaking
             if (usedState.getBlock() instanceof FieldProjectorBlock) {
-                player.displayClientMessage(Component.literal("copying field position"), true);
+                player.displayClientMessage(Component.translatable("tooltip.compactcrafting.proxy_copy_pos"), true);
 
                 FieldProjectorEntity tile = (FieldProjectorEntity) level.getBlockEntity(usedAt);
                 if (tile != null) {

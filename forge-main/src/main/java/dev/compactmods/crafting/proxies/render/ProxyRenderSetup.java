@@ -16,6 +16,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class ProxyRenderSetup {
 
     @SubscribeEvent
+    @SuppressWarnings("removal")
     public static void init(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(CCBlocks.MATCH_FIELD_PROXY_BLOCK.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(CCBlocks.RESCAN_FIELD_PROXY_BLOCK.get(), RenderType.cutoutMipped());

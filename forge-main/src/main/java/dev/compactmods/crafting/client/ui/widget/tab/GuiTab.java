@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec2;
 
 public class GuiTab implements Renderable, GuiEventListener, IWidgetPreBackgroundRenderable, IWidgetPostBackgroundRenderable {
 
-    protected final ResourceLocation TEXTURE = new ResourceLocation(CompactCrafting.MOD_ID, "textures/gui/widget/tabs.png");
+    protected final ResourceLocation TEXTURE = CompactCrafting.modRL("textures/gui/widget/tabs.png");
 
     private final ItemRenderer itemRenderer;
     private final Font fontRenderer;

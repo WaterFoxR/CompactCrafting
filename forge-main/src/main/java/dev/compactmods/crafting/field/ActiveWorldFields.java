@@ -81,9 +81,9 @@ public class ActiveWorldFields implements IActiveWorldFields, INBTSerializable<L
         laziness.put(center, lazy);
         field.setRef(lazy);
 
-        lazy.addListener(lo -> {
-            lo.ifPresent(this::unregisterField);
-        });
+        lazy.addListener(lo ->
+            lo.ifPresent(this::unregisterField)
+        );
     }
 
     public IMiniaturizationField registerField(IMiniaturizationField field) {

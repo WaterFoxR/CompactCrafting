@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -51,7 +52,7 @@ public class MiniaturizationFieldRenderer {
     }
 
     public static void render(Level level, IMiniaturizationField field, float partialTicks, PoseStack pose, MultiBufferSource.BufferSource buffers) {
-        // GhostRenderer.render(Blocks.GREEN_STAINED_GLASS.defaultBlockState(), field.getCenter(), matrixStack);
+//         GhostRenderer.render(Blocks.GREEN_STAINED_GLASS.defaultBlockState(), field.getCenter(), pose);
         final Minecraft mc = Minecraft.getInstance();
         final Camera mainCamera = mc.gameRenderer.getMainCamera();
         Vec3 projectedView = mainCamera.getPosition();
@@ -67,6 +68,8 @@ public class MiniaturizationFieldRenderer {
             }
 
             drawMainField(level, pose, buffers, field);
+
+            field.enable();
 
             field.getProjectors()
                     .locations()

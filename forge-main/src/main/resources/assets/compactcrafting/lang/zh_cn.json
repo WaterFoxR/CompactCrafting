@@ -28,6 +28,8 @@
   "tooltip.compactcrafting.proxy_hint": "使用红石微缩力场代理来自动化微缩合成。",
   "tooltip.compactcrafting.proxy_bind_hint": "使用该方块Shift+右击一个成型微缩力场的四个投影仪中的一个即可绑定到该力场。",
   "tooltip.compactcrafting.proxy_unbind_hint": "Shift+右键空气取消绑定。",
+  "tooltip.compactcrafting.proxy_clear_data": "清除微缩力场数据",
+  "tooltip.compactcrafting.proxy_copy_pos": "复制微缩力场位置",
 
   "messages.compactcrafting.no_field_cap": "找不到位于 %s 处的方块信息",
   "messages.compactcrafting.no_field_found": "找不到微型合成字段信息。",

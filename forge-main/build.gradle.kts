@@ -91,7 +91,7 @@ minecraft {
             taskName("runClient")
             workingDirectory(file("run/client"))
 
-            args("--username", "Nano")
+            args("--username", "Dev")
             args("--width", 1920)
             args("--height", 1080)
         }
@@ -185,6 +185,9 @@ dependencies {
 
     // Jade
     implementation(fg.deobf("curse.maven:jade-324717:6855440"))
+
+    //nbt编辑
+    runtimeOnly(fg.deobf("curse.maven:nbtedit-678133:5984630"))
 
     // Spark
     runtimeOnly(fg.deobf("curse.maven:spark-361579:4738952"))

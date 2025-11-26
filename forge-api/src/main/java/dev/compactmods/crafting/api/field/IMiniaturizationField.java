@@ -88,7 +88,7 @@ public interface IMiniaturizationField extends INBTSerializable<Tag> {
 
         if (nbt.contains("recipe")) {
             CompoundTag recipe = nbt.getCompound("recipe");
-            this.setRecipe(new ResourceLocation(recipe.getString("id")));
+            this.setRecipe(ResourceLocation.tryParse(recipe.getString("id")));
             this.setProgress(recipe.getInt("progress"));
         }
     }
