@@ -17,6 +17,7 @@ public class BaseRecipeType<T extends RecipeBase> implements RecipeType<T> {
         return registryName.toString();
     }
 
+    @SuppressWarnings("deprecation")
     public void register() {
         Registry.register(BuiltInRegistries.RECIPE_TYPE, registryName, this);
     }

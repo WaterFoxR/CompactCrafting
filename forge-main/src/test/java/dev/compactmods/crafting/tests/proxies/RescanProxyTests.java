@@ -10,7 +10,6 @@ import dev.compactmods.crafting.tests.recipes.util.RecipeTestUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.gametest.GameTestHolder;

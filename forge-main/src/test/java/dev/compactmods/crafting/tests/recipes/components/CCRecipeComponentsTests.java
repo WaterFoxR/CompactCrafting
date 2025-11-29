@@ -22,6 +22,7 @@ import java.util.Optional;
 @GameTestHolder(CompactCrafting.MOD_ID)
 public class CCRecipeComponentsTests {
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void fetches_fresh_components(final GameTestHelper test) {
         MiniaturizationRecipeComponents components = new MiniaturizationRecipeComponents();
@@ -81,6 +82,7 @@ public class CCRecipeComponentsTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void unregistered_blocks_considered_empty(final GameTestHelper test) {
         MiniaturizationRecipeComponents components = new MiniaturizationRecipeComponents();
@@ -94,6 +96,7 @@ public class CCRecipeComponentsTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void registers_non_block_components(final GameTestHelper test) {
         MiniaturizationRecipeComponents components = new MiniaturizationRecipeComponents();

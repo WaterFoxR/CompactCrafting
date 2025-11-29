@@ -47,7 +47,8 @@ public class WorldEventHandler {
 
     @SubscribeEvent
     public static void onWorldTick(final TickEvent.LevelTickEvent evt) {
-        if (evt.phase != TickEvent.Phase.START) return;
+        // 如果不限制客户端，会导致调用2次tick从而客户端的配方进度永远是服务端的2倍
+        if (evt.level.isClientSide() && evt.phase != TickEvent.Phase.START) return;
 
         evt.level.getCapability(CCCapabilities.FIELDS)
                 .ifPresent(IActiveWorldFields::tickFields);
@@ -61,16 +62,12 @@ public class WorldEventHandler {
 
         level.getCapability(CCCapabilities.FIELDS)
                 .map(f -> f.getFields(pos))
-                .ifPresent(activeFields -> {
-                    activeFields.forEach(field -> {
-                        ClientFieldWatchPacket pkt = new ClientFieldWatchPacket(field);
-
-                        NetworkHandler.MAIN_CHANNEL.send(
-                                PacketDistributor.PLAYER.with(() -> player),
-                                pkt
-                        );
-                    });
-                });
+                .ifPresent(activeFields -> activeFields.forEach(field -> {
+                    NetworkHandler.MAIN_CHANNEL.send(
+                            PacketDistributor.PLAYER.with(() -> player),
+                            ClientFieldWatchPacket.fromField(field)
+                    );
+                }));
     }
 
     @SubscribeEvent
@@ -81,16 +78,12 @@ public class WorldEventHandler {
 
         level.getCapability(CCCapabilities.FIELDS)
                 .map(f -> f.getFields(pos))
-                .ifPresent(activeFields -> {
-                    activeFields.forEach(field -> {
-                        ClientFieldUnwatchPacket pkt = new ClientFieldUnwatchPacket(field.getCenter());
-
-                        NetworkHandler.MAIN_CHANNEL.send(
-                                PacketDistributor.PLAYER.with(() -> player),
-                                pkt
-                        );
-                    });
-                });
+                .ifPresent(activeFields -> activeFields.forEach(field -> {
+                    NetworkHandler.MAIN_CHANNEL.send(
+                            PacketDistributor.PLAYER.with(() -> player),
+                            new ClientFieldUnwatchPacket(field.getCenter())
+                    );
+                }));
     }
 
     @SubscribeEvent

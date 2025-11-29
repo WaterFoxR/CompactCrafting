@@ -11,8 +11,9 @@ public abstract class RecipeHelper {
      * Assumes an array is on the Z axis; meant to convert a single array to a map for collective
      * adding.
      *
-     * @param array
-     * @return
+     * @param array The array to convert.
+     * @param x The X position of the array.
+     * @return A map of positions to component keys.
      */
     public static Map<BlockPos, String> convertSingleArrayToMap(String[] array, int x) {
         HashMap<BlockPos, String> map = new HashMap<>();

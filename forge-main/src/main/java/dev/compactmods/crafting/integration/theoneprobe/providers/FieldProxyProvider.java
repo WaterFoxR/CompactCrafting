@@ -1,4 +1,4 @@
-package dev.compactmods.crafting.compat.theoneprobe.providers;
+package dev.compactmods.crafting.integration.theoneprobe.providers;
 
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.core.CCCapabilities;

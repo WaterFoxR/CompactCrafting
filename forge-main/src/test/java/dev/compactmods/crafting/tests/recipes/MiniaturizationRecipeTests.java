@@ -4,10 +4,8 @@ import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeBlocks;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
-import dev.compactmods.crafting.core.CCMiniaturizationRecipes;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import dev.compactmods.crafting.recipes.blocks.RecipeBlocks;
-import dev.compactmods.crafting.recipes.setup.FakeInventory;
 import dev.compactmods.crafting.tests.GameTestTemplates;
 import dev.compactmods.crafting.tests.components.GameTestAssertions;
 import dev.compactmods.crafting.tests.recipes.util.RecipeTestUtil;
@@ -15,8 +13,6 @@ import dev.compactmods.crafting.util.BlockSpaceUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.gametest.GameTestHolder;
@@ -41,6 +37,7 @@ public class MiniaturizationRecipeTests {
                 .orElse(null);
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanCreateRecipe(final GameTestHelper test) {
         MiniaturizationRecipe recipe = new MiniaturizationRecipe();

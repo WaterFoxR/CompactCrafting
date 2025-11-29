@@ -8,7 +8,6 @@ public interface IFixedSizedRecipeLayer {
     /**
      * Gets the trimmed dimensions of the given recipe layer.
      *
-     * @return
      */
     AABB getDimensions();
 

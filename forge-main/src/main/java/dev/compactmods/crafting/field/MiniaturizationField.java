@@ -16,10 +16,7 @@ import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
 import dev.compactmods.crafting.api.recipe.IMiniaturizationRecipe;
 import dev.compactmods.crafting.crafting.CraftingHelper;
 import dev.compactmods.crafting.events.WorldEventHandler;
-import dev.compactmods.crafting.network.FieldActivatedPacket;
-import dev.compactmods.crafting.network.FieldDeactivatedPacket;
-import dev.compactmods.crafting.network.FieldRecipeChangedPacket;
-import dev.compactmods.crafting.network.NetworkHandler;
+import dev.compactmods.crafting.network.*;
 import dev.compactmods.crafting.projector.FieldProjectorBlock;
 import dev.compactmods.crafting.projector.FieldProjectorEntity;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
@@ -29,7 +26,6 @@ import dev.compactmods.crafting.util.BlockSpaceUtil;
 import io.reactivex.rxjava3.disposables.Disposable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,7 +42,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -55,7 +50,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class MiniaturizationField implements IMiniaturizationField {
 
@@ -96,6 +90,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         setupChunkListener();
     }
 
+    @SuppressWarnings("deprecation")
     public MiniaturizationField(CompoundTag nbt) {
         this.craftingState = EnumCraftingState.valueOf(nbt.getString("state"));
 
@@ -122,6 +117,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         this.disabled = nbt.contains("disabled") && nbt.getBoolean("disabled");
     }
 
+    @SuppressWarnings("deprecation")
     private MiniaturizationField(Level level, CompoundTag nbt) {
         this.level = level;
         this.craftingState = EnumCraftingState.valueOf(nbt.getString("state"));
@@ -140,6 +136,7 @@ public class MiniaturizationField implements IMiniaturizationField {
             this.craftingProgress = nbt.getInt("progress");
 
             // Load recipe from registry
+            //noinspection DataFlowIssue
             level.getRecipeManager().byKey(recipeId).ifPresent(recipe -> {
                 if (recipe instanceof MiniaturizationRecipe mr) {
                     this.currentRecipe = mr;
@@ -230,7 +227,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         // Load recipe information from temporary id variable
         if (level != null && this.recipeId != null) {
             final Optional<? extends Recipe<?>> r = level.getRecipeManager().byKey(recipeId);
-            if (!r.isPresent()) {
+            if (r.isEmpty()) {
                 clearRecipe();
                 return;
             }
@@ -317,64 +314,86 @@ public class MiniaturizationField implements IMiniaturizationField {
         if (level == null || this.disabled)
             return;
 
-        // Set in a block update handler to mark that the field has changed
-        if (rescanTime > 0 && level.getGameTime() >= rescanTime) {
-            doRecipeScan();
-            this.rescanTime = 0;
-            return;
-        }
-
-        if (getProjectorPositions().allMatch(level::isLoaded))
-            tickCrafting();
-    }
-
-    private void tickCrafting() {
-        AABB fieldBounds = getBounds();
-
-        if (level == null || this.currentRecipe == null)
-            return;
-
-
-        switch (craftingState) {
-            case MATCHED:
-
-                // We grow the bounds check here a little to support patterns that are exactly the size of the field
-                List<ItemEntity> catalystEntities = getCatalystsInField(level, fieldBounds.inflate(0.25), currentRecipe.getCatalyst());
-                if (catalystEntities.size() > 0) {
-
-                    matchedCatalysts = catalystEntities.stream()
-                            .map((ItemEntity t) -> t.getItem().getItem())
-                            .collect(Collectors.toSet());
-
-                    // Only remove items and clear the field on servers
-                    if (!level.isClientSide) {
-                        CraftingHelper.consumeCatalystItem(catalystEntities.get(0), 1);
-
-                        // We know the "recipe" in the field is an exact match already, so wipe the field
-                        clearBlocks();
-                    }
-
-                    setCraftingState(EnumCraftingState.CRAFTING);
+        switch (this.craftingState) {
+            case NOT_MATCHED:
+                // Set in a block update handler to mark that the field has changed
+                if (rescanTime > 0 && level.getGameTime() >= rescanTime) {
+                    doRecipeScan();
+                    this.rescanTime = 0;
+                    break;
                 }
 
+                // Rescan every 5 seconds because tools like the Advanced Swapper don't trigger the field contents changed
+                if (level.getGameTime() % 100 == 0) {
+                    doRecipeScan();
+                }
+                break;
+
+            case MATCHED:
+                AABB fieldBounds = getBounds();
+                searchAndConsumeCatalysts(fieldBounds);
                 break;
 
             case CRAFTING:
-                craftingProgress++;
-                if (craftingProgress >= currentRecipe.getCraftingTime()) {
-                    for (ItemStack is : currentRecipe.getOutputs()) {
-                        ItemEntity itemEntity = new ItemEntity(level, center.getX() + 0.5f, center.getY() + 0.5f, center.getZ() + 0.5f, is);
-                        level.addFreshEntity(itemEntity);
-                    }
-
-                    IMiniaturizationRecipe completed = this.currentRecipe;
-
-                    clearRecipe();
-
-                    listeners.forEach(l -> l.ifPresent(listener -> listener.onRecipeCompleted(this, completed)));
-                }
-
+                tickCrafting();
                 break;
+        }
+    }
+
+    private void tickCrafting() {
+        if (this.currentRecipe == null)
+            return;
+
+        craftingProgress++;
+
+        if (craftingProgress >= currentRecipe.getCraftingTime()) {
+            for (ItemStack is : currentRecipe.getOutputs()) {
+                ItemEntity itemEntity = new ItemEntity(level, center.getX() + 0.5f, center.getY() + 0.5f, center.getZ() + 0.5f, is);
+                level.addFreshEntity(itemEntity);
+            }
+
+//            spawnParticlesAtProjectors(RECIPE_FINISHED_PARTICLE_OPTS);
+
+            IMiniaturizationRecipe completed = this.currentRecipe;
+            clearRecipe();
+
+            listeners.forEach(l -> l.ifPresent(listener -> listener.onRecipeCompleted(this, completed)));
+        }
+    }
+
+    private void searchAndConsumeCatalysts(AABB fieldBounds) {
+        // We grow the bounds check here a little to support patterns that are exactly the size of the field
+        @SuppressWarnings("DataFlowIssue")// False positive, we know the currentRecipe will not be empty
+        List<ItemEntity> catalystEntities = getCatalystsInField(level, fieldBounds.inflate(0.25), currentRecipe.getCatalyst());
+        if (!catalystEntities.isEmpty()) {
+
+            matchedCatalysts = catalystEntities.stream()
+                    .map((ItemEntity t) -> t.getItem().getItem())
+                    .collect(Collectors.toSet());
+
+
+            var foundPosition = catalystEntities.stream().findFirst()
+                    .map(ItemEntity::position)
+                    .orElse(null);
+
+            // Only remove items and clear the field on servers
+            if (!level.isClientSide) {
+                CraftingHelper.consumeCatalystItem(catalystEntities.get(0), 1);
+
+                // We know the "recipe" in the field is an exact match already, so wipe the field
+                clearBlocks();
+            } else {
+                for (int i = 0; i < 5; i++) {
+                    //noinspection DataFlowIssue
+                    level.addParticle(ParticleTypes.LARGE_SMOKE,
+                            foundPosition.x + level.random.nextDouble(),
+                            foundPosition.y + level.random.nextDouble(),
+                            foundPosition.z + level.random.nextDouble(),
+                            0.0, 0.0, 0.0);
+                }
+            }
+
+            setCraftingState(EnumCraftingState.CRAFTING);
         }
     }
 
@@ -391,7 +410,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         Stream<BlockPos> filledBlocks = getFilledBlocks();
 
         // If no positions filled, exit early
-        if (!filledBlocks.findAny().isPresent()) {
+        if (filledBlocks.findAny().isEmpty()) {
             clearRecipe();
             return;
         }
@@ -456,7 +475,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         if (!level.isClientSide) {
             NetworkHandler.MAIN_CHANNEL.send(
                     PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(center)),
-                    new FieldRecipeChangedPacket(this)
+                    FieldRecipeChangedPacket.fromField(this)
             );
         }
 
@@ -465,7 +484,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         listeners.forEach(l -> l.ifPresent(fl -> {
             fl.onRecipeChanged(this, finalMatchedRecipe);
 
-            if (craftingState == EnumCraftingState.MATCHED)
+            if (craftingState == EnumCraftingState.MATCHED && finalMatchedRecipe != null)
                 fl.onRecipeMatched(this, finalMatchedRecipe);
         }));
     }
@@ -487,6 +506,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         return loaded || level.isClientSide;
     }
 
+    @SuppressWarnings("deprecation")
     public void checkLoaded() {
         CompactCrafting.LOGGER.debug("Checking loaded state.");
         this.loaded = level.isAreaLoaded(center, size.getProjectorDistance() + 3);
@@ -618,9 +638,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         if (this.craftingState != EnumCraftingState.NOT_MATCHED)
             handleDestabilize();
 
-        getProjectorPositions().forEach(proj -> {
-            FieldProjectorBlock.deactivateProjector(level, proj);
-        });
+        getProjectorPositions().forEach(proj -> FieldProjectorBlock.deactivateProjector(level, proj));
 
         FieldDeactivatedPacket update = new FieldDeactivatedPacket(size, center);
         NetworkHandler.MAIN_CHANNEL.send(

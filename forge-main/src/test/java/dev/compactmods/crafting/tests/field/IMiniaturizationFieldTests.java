@@ -2,7 +2,6 @@ package dev.compactmods.crafting.tests.field;
 
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.field.IMiniaturizationField;
-import dev.compactmods.crafting.field.MiniaturizationField;
 import dev.compactmods.crafting.tests.GameTestTemplates;
 import dev.compactmods.crafting.tests.components.GameTestAssertions;
 import net.minecraft.core.BlockPos;
@@ -18,6 +17,7 @@ import java.util.stream.Stream;
 @GameTestHolder(CompactCrafting.MOD_ID)
 public class IMiniaturizationFieldTests {
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void fresh_field_has_no_projectors(final GameTestHelper test) {
         IMiniaturizationField blank = new BlankMiniaturizationField();
@@ -34,6 +34,7 @@ public class IMiniaturizationFieldTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void BasicClientDataNoRecipe(final GameTestHelper test) {
         IMiniaturizationField blank = new BlankMiniaturizationField();

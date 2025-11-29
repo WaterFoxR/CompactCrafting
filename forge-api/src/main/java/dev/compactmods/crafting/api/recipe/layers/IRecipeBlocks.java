@@ -26,7 +26,6 @@ public interface IRecipeBlocks {
 
     /**
      * Gets the number of unique component keys in this set of blocks.
-     * @return
      */
     int getNumberKnownComponents();
 

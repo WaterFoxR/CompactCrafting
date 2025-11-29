@@ -1,7 +1,7 @@
-package dev.compactmods.crafting.compat.theoneprobe;
+package dev.compactmods.crafting.integration.theoneprobe;
 
-import dev.compactmods.crafting.compat.theoneprobe.providers.FieldProjectorProvider;
-import dev.compactmods.crafting.compat.theoneprobe.providers.FieldProxyProvider;
+import dev.compactmods.crafting.integration.theoneprobe.providers.FieldProjectorProvider;
+import dev.compactmods.crafting.integration.theoneprobe.providers.FieldProxyProvider;
 import mcjty.theoneprobe.api.ITheOneProbe;
 
 import java.util.function.Function;

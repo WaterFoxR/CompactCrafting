@@ -6,13 +6,13 @@ import dev.compactmods.crafting.core.*;
 import dev.compactmods.crafting.network.NetworkHandler;
 import dev.compactmods.crafting.recipes.components.ComponentRegistration;
 import dev.compactmods.crafting.server.ServerConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -72,5 +72,12 @@ public class CompactCrafting
 
     public static ResourceLocation modRL(String path) {
         return ResourceLocation.tryBuild(MOD_ID, path);
+    }
+
+    public static void ClientPlayerTell(Object message)
+    {
+        if (Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal(message.toString()));
+        }
     }
 }

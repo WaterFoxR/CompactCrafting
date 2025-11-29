@@ -9,7 +9,6 @@ import dev.compactmods.crafting.tests.GameTestTemplates;
 import dev.compactmods.crafting.tests.recipes.util.RecipeTestUtil;
 import dev.compactmods.crafting.tests.util.FileHelper;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;

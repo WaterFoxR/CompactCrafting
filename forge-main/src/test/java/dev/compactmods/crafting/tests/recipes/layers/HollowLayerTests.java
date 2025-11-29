@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 @GameTestHolder(CompactCrafting.MOD_ID)
 public class HollowLayerTests {
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanCreateHollowLayerWithConstructor(final GameTestHelper test) {
         HollowComponentRecipeLayer layer = new HollowComponentRecipeLayer("A");
@@ -35,6 +36,7 @@ public class HollowLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void HollowComponentCountsAreCorrectForFieldSize(final GameTestHelper test) {
         HollowComponentRecipeLayer layer = new HollowComponentRecipeLayer("A");
@@ -61,6 +63,7 @@ public class HollowLayerTests {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void HollowPositionalInquiries(final GameTestHelper test) {
         HollowComponentRecipeLayer layer = new HollowComponentRecipeLayer("A");
@@ -89,6 +92,7 @@ public class HollowLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void returns_component_positions(final GameTestHelper test) {
         HollowComponentRecipeLayer layer = new HollowComponentRecipeLayer("A");

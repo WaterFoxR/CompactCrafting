@@ -9,6 +9,13 @@ public class MathUtil {
         return calculateFieldScale(field.getProgress(), requiredTime);
     }
 
+    /**
+     * 根据微缩合成配方进度计算微缩力场的缩放比例，用于渲染配方合成动画
+     *
+     * @param progress 微缩力场当前配方执行进度
+     * @param requiredTime 微缩合成配方总耗时
+     * @return 微缩力场的缩放比例
+     */
     public static double calculateFieldScale(double progress, double requiredTime) {
         double waveDensity = 0.3d;
         double h = 0.2d;

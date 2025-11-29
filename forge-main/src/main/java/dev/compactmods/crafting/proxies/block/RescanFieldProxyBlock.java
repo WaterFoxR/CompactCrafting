@@ -24,6 +24,7 @@ public class RescanFieldProxyBlock extends FieldProxyBlock implements EntityBloc
         return new RescanFieldProxyEntity(pos, state);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(BlockState thisState, Level level, BlockPos thisPos, Block changedBlock, BlockPos changedPos, boolean _b) {
         if (level.isClientSide) {

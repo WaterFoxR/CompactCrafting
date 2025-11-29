@@ -35,7 +35,7 @@ public class RecipeChunk extends EmptyLevelChunk {
             int y = pos.getY();
             Optional<IRecipeLayer> layer = recipe.getLayer(y);
 
-            if(!layer.isPresent())
+            if(layer.isEmpty())
                 return;
 
             IRecipeLayer rLayer = layer.get();

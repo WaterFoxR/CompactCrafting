@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
+@SuppressWarnings({"JavadocDeclaration", "NullableProblems"})
 public class FakeInventory implements Container {
     /**
      * Returns the number of slots in the inventory.

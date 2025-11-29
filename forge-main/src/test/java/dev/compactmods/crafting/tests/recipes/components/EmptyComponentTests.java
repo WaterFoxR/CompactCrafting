@@ -44,6 +44,7 @@ public class EmptyComponentTests {
                 });
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void DoesNotErrorRendering(final GameTestHelper test) {
         EmptyBlockComponent c = new EmptyBlockComponent();

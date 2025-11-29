@@ -38,6 +38,7 @@ public class ComponentPositionLookupTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanAddSingleComponent(final GameTestHelper test) {
         ComponentPositionLookup lookup = new ComponentPositionLookup();
@@ -71,6 +72,7 @@ public class ComponentPositionLookupTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void UnknownPositionConsideredEmpty(final GameTestHelper test) {
         ComponentPositionLookup lookup = new ComponentPositionLookup();
@@ -91,6 +93,7 @@ public class ComponentPositionLookupTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanCreateAndCacheTotals(final GameTestHelper test) {
         ComponentPositionLookup lookup = new ComponentPositionLookup();

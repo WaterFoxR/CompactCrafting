@@ -18,6 +18,7 @@ public class MatchFieldProxyBlock extends FieldProxyBlock implements EntityBlock
         super(props);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onPlace(BlockState currState, Level level, BlockPos placedAt, BlockState prevState, boolean update) {
         super.onPlace(currState, level, placedAt, prevState, update);
@@ -37,11 +38,13 @@ public class MatchFieldProxyBlock extends FieldProxyBlock implements EntityBlock
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isSignalSource(BlockState state) {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return state.getValue(SIGNAL);

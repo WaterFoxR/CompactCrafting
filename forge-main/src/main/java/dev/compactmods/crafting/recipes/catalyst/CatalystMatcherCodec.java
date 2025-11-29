@@ -10,7 +10,6 @@ import dev.compactmods.crafting.api.catalyst.CatalystType;
 import dev.compactmods.crafting.api.catalyst.ICatalystMatcher;
 import dev.compactmods.crafting.core.CCCatalystTypes;
 import dev.compactmods.crafting.util.CodecExtensions;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 
 public class CatalystMatcherCodec {

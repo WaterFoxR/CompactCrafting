@@ -1,4 +1,4 @@
-package dev.compactmods.crafting.compat.jade.providers;
+package dev.compactmods.crafting.integration.jade.providers;
 
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.EnumCraftingState;

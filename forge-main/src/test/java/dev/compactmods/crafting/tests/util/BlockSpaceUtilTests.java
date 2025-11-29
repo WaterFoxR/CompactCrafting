@@ -33,6 +33,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void no_blocks_equals_empty_axis_bounds(final GameTestHelper test) {
         final Set<BlockPos> positions = Collections.emptySet();
@@ -43,6 +44,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void calculates_center_bounds_odd(final GameTestHelper test) {
         AABB fullBounds = BlockSpaceUtil.getLayerBounds(MiniaturizationFieldSize.MEDIUM, 0);
@@ -59,6 +61,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void calculates_center_bounds_even(final GameTestHelper test) {
         AABB fullBounds = new AABB(0, 0, 0, 6, 1, 6);
@@ -81,6 +84,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void bounds_fits_inside(final GameTestHelper test) {
         AABB outer = new AABB(0, 0, 0, 10, 10, 10);
@@ -100,6 +104,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanGetLayerBlockPositions(final GameTestHelper test) {
         AABB layer = new AABB(0, 0, 0, 5, 1, 5);
@@ -121,6 +126,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void SingleBlockRotatesCorrectly(final GameTestHelper test) {
         BlockPos[] singleBlock = new BlockPos[]{
@@ -136,6 +142,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void ComplexShapeRotatesInPlaceCorrectly(final GameTestHelper test) {
         /*
@@ -202,6 +209,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void ComplexShapeRotates180Correctly(final GameTestHelper test) {
         /*
@@ -267,6 +275,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void doesNormalizeSingleBlockPos(final GameTestHelper test) {
         // 7x7x7 field, similar to a large field
@@ -316,6 +325,7 @@ public class BlockSpaceUtilTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void denormalizes_single_position(final GameTestHelper test) {
         // 7x7x7 field, similar to a large field

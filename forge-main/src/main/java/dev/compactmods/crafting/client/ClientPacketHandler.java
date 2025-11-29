@@ -93,4 +93,14 @@ public abstract class ClientPacketHandler {
                 .lazyMap(af -> af.get(center))
                 .ifPresent(field -> field.ifPresent(f -> f.setRecipe(recipe)));
     }
+
+    public static void handleProgressUpdate(BlockPos center, int progress) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null)
+            return;
+
+        mc.level.getCapability(CCCapabilities.FIELDS)
+                .lazyMap(af -> af.get(center))
+                .ifPresent(field -> field.ifPresent(f -> f.setProgress(progress)));
+    }
 }

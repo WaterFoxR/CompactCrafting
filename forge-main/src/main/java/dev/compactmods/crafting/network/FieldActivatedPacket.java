@@ -57,9 +57,8 @@ public class FieldActivatedPacket {
     public static void handle(FieldActivatedPacket message, Supplier<NetworkEvent.Context> context) {
         NetworkEvent.Context ctx = context.get();
 
-        ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ClientPacketHandler.handleFieldActivation(message.field, message.clientData);
-        }));
+        ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                ClientPacketHandler.handleFieldActivation(message.field, message.clientData)));
 
         ctx.setPacketHandled(true);
     }

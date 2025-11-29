@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import dev.compactmods.crafting.api.components.IRecipeComponents;
 import net.minecraft.core.BlockPos;
 
+@SuppressWarnings("JavadocDeclaration")
 public interface IRecipeLayer {
 
     Set<String> getComponents();
@@ -17,7 +18,6 @@ public interface IRecipeLayer {
      * Gets a component key for the given (normalized) position.
      *
      * @param pos
-     * @return
      */
     Optional<String> getComponentForPosition(BlockPos pos);
 

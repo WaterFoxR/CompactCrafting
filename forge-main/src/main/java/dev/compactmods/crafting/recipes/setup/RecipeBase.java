@@ -9,8 +9,8 @@ public abstract class RecipeBase implements Recipe<FakeInventory> {
     /**
      * Used to check if a recipe matches current crafting inventory
      *
-     * @param inv
-     * @param worldIn
+     * @param inv The inventory to check.
+     * @param worldIn The world to check in.
      */
     @Override
     public boolean matches(FakeInventory inv, Level worldIn) {

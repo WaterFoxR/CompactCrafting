@@ -1,7 +1,7 @@
 package dev.compactmods.crafting.events;
 
 import dev.compactmods.crafting.CompactCrafting;
-import dev.compactmods.crafting.compat.theoneprobe.TheOneProbeCompat;
+import dev.compactmods.crafting.integration.theoneprobe.TheOneProbeCompat;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;

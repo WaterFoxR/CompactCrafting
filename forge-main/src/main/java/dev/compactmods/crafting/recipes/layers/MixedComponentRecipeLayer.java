@@ -11,7 +11,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.components.IPositionalComponentLookup;
-import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.components.IRecipeComponents;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeBlocks;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
@@ -66,8 +65,7 @@ public class MixedComponentRecipeLayer implements IRecipeLayer, IFixedSizedRecip
     /**
      * Gets a component key for the given (normalized) position.
      *
-     * @param pos
-     * @return
+     * @param pos The position to check.
      */
     public Optional<String> getComponentForPosition(BlockPos pos) {
         return componentLookup.getRequiredComponentKeyForPosition(pos);

@@ -1,7 +1,6 @@
 package dev.compactmods.crafting.network;
 
 import dev.compactmods.crafting.CompactCrafting;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -30,7 +29,7 @@ public class NetworkHandler {
 
         MAIN_CHANNEL.messageBuilder(ClientFieldWatchPacket.class, 3, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(ClientFieldWatchPacket::encode)
-                .decoder(ClientFieldWatchPacket::new)
+                .decoder(ClientFieldWatchPacket::fromBuffer)
                 .consumerMainThread(ClientFieldWatchPacket::handle)
                 .add();
 
@@ -42,7 +41,7 @@ public class NetworkHandler {
 
         MAIN_CHANNEL.messageBuilder(FieldRecipeChangedPacket.class, 5, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(FieldRecipeChangedPacket::encode)
-                .decoder(FieldRecipeChangedPacket::new)
+                .decoder(FieldRecipeChangedPacket::fromBuffer)
                 .consumerMainThread(FieldRecipeChangedPacket::handle)
                 .add();
     }

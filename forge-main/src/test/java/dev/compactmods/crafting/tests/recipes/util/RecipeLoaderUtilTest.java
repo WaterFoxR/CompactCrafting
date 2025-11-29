@@ -37,6 +37,7 @@ public class RecipeLoaderUtilTest {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     private static void assertPosition(Map<BlockPos, String> map, int x, int z) {
         GameTestAssertions.assertEquals("X", getPosition(map, x, z));
     }

@@ -3,7 +3,6 @@ package dev.compactmods.crafting.api.field;
 import java.util.Optional;
 import java.util.stream.Stream;
 import dev.compactmods.crafting.api.EnumCraftingState;
-import dev.compactmods.crafting.api.projector.FieldProjectorProperties;
 import dev.compactmods.crafting.api.projector.FieldProjectorSet;
 import dev.compactmods.crafting.api.recipe.IMiniaturizationRecipe;
 import net.minecraft.core.BlockPos;

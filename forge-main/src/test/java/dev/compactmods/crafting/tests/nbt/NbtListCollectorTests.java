@@ -18,6 +18,7 @@ import java.util.List;
 @GameTestHolder(CompactCrafting.MOD_ID)
 public class NbtListCollectorTests {
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanCombineLists(final GameTestHelper test) {
         ListTag list1 = new ListTag();

@@ -15,7 +15,6 @@ public class ComponentRegistration {
 
     public static final ResourceLocation RECIPE_COMPONENTS_ID = CompactCrafting.modRL("recipe_components");
 
-    @SuppressWarnings("unchecked")
     public static DeferredRegister<RecipeComponentType<?>> RECIPE_COMPONENTS = DeferredRegister.create(RECIPE_COMPONENTS_ID, CompactCrafting.MOD_ID);
 
     public static Supplier<IForgeRegistry<RecipeComponentType<?>>> COMPONENTS = RECIPE_COMPONENTS.makeRegistry(() -> new RegistryBuilder<RecipeComponentType<?>>()

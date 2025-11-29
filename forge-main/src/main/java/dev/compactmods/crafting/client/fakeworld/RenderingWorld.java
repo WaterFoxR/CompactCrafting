@@ -36,6 +36,7 @@ public class RenderingWorld extends Level {
     private final MiniaturizationRecipe recipe;
 
     private final Scoreboard scoreboard = new Scoreboard();
+    @SuppressWarnings("deprecation")
     private final RecipeManager recipeManager = new RecipeManager();
     private final RenderingChunkProvider chunkProvider;
 

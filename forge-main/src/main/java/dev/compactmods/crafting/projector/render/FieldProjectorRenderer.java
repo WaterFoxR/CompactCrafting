@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.compactmods.crafting.CompactCrafting;
-import dev.compactmods.crafting.api.field.IMiniaturizationField;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
 import dev.compactmods.crafting.client.ClientConfig;
 import dev.compactmods.crafting.client.render.*;
@@ -31,11 +30,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.common.util.LazyOptional;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 @SuppressWarnings("NullableProblems")
 public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjectorEntity> {
@@ -51,8 +47,9 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
     @Override
     public void render(FieldProjectorEntity tile, float partialTicks, PoseStack mx, MultiBufferSource buffers, int combinedLightIn, int combinedOverlayIn) {
         long gameTime = tile.getLevel().getGameTime();
-
         renderDish(tile, mx, buffers, combinedLightIn, combinedOverlayIn, gameTime);
+
+        if(!tile.getField().isPresent())return;
 
         AABB bounds = tile.getField().map(field -> {
             double scale = MathUtil.calculateFieldScale(field);
@@ -63,6 +60,7 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
             final BlockPos center = fieldSize.getCenterFromProjector(tile.getBlockPos(), state.getValue(FieldProjectorBlock.FACING));
             return fieldSize.getBoundsAtPosition(center);
         });
+
 
         mx.pushPose();
         {
@@ -117,7 +115,7 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
 
             mx.translate(-.5, 0, -.5);
 
-            int faceColor = MiniaturizationFieldRenderer.getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
+            int faceColor = getProjectionColor(EnumProjectorColorType.PROJECTOR_FACE);
             float red = FastColor.ARGB32.red(faceColor) / 255f;
             float green = FastColor.ARGB32.green(faceColor) / 255f;
             float blue = FastColor.ARGB32.blue(faceColor) / 255f;
@@ -133,6 +131,8 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
         }
         mx.popPose();
     }
+
+
 
     /**
      * Handles rendering the main projection cube in the center of the projection area.
@@ -238,41 +238,41 @@ public class FieldProjectorRenderer implements BlockEntityRenderer<FieldProjecto
             );
 
             mx.pushPose();
+            {
 
-            mx.translate(.5, .5, .5);
+                mx.translate(.5, .5, .5);
 
-            // mx.mulPose(rotation);
+                // mx.mulPose(rotation);
 
-            int colorProjectionArc = getProjectionColor(EnumProjectorColorType.SCAN_LINE);
+                int colorProjectionArc = getProjectionColor(EnumProjectorColorType.SCAN_LINE);
 
-            Vec3 scanLeft = CubeRenderHelper.getScanLineRight(facing, fieldBounds, gameTime).subtract(tilePos);
-            Vec3 scanRight = CubeRenderHelper.getScanLineLeft(facing, fieldBounds, gameTime).subtract(tilePos);
+                Vec3 scanLeft = CubeRenderHelper.getScanLineRight(facing, fieldBounds, gameTime).subtract(tilePos);
+                Vec3 scanRight = CubeRenderHelper.getScanLineLeft(facing, fieldBounds, gameTime).subtract(tilePos);
 
-            // 0, 0, 0 is now the edge of the projector's space
-            final Matrix4f p = mx.last().pose();
-            final Matrix3f n = mx.last().normal();
+                // 0, 0, 0 is now the edge of the projector's space
+                final Matrix4f p = mx.last().pose();
+                final Matrix3f n = mx.last().normal();
 
-            builder.vertex(p, 0, 0.2f, 0)
-                    .color(colorProjectionArc)
-                    .normal(n, 0, 0, 0)
-                    .endVertex();
+                builder.vertex(p, 0, 0.2f, 0)
+                        .color(colorProjectionArc)
+                        .normal(n, 0, 0, 0)
+                        .endVertex();
 
-            builder.vertex(p, (float) scanLeft.x, (float) scanLeft.y, (float) scanLeft.z)
-                    .color(colorProjectionArc)
-                    .normal(n, 0, 0, 0)
-                    .endVertex();
+                builder.vertex(p, (float) scanLeft.x, (float) scanLeft.y, (float) scanLeft.z)
+                        .color(colorProjectionArc)
+                        .normal(n, 0, 0, 0)
+                        .endVertex();
 
-            builder.vertex(p, (float) scanRight.x, (float) scanRight.y, (float) scanRight.z)
-                    .color(colorProjectionArc)
-                    .normal(n, 0, 0, 0)
-                    .endVertex();
+                builder.vertex(p, (float) scanRight.x, (float) scanRight.y, (float) scanRight.z)
+                        .color(colorProjectionArc)
+                        .normal(n, 0, 0, 0)
+                        .endVertex();
 
-            builder.vertex(p, 0, 0.2f, 0)
-                    .color(colorProjectionArc)
-                    .normal(n, 0, 0, 0)
-                    .endVertex();
-            ;
-
+                builder.vertex(p, 0, 0.2f, 0)
+                        .color(colorProjectionArc)
+                        .normal(n, 0, 0, 0)
+                        .endVertex();
+            }
             mx.popPose();
         }
 

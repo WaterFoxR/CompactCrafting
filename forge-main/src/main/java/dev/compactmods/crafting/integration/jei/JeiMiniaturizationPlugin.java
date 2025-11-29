@@ -1,13 +1,10 @@
-package dev.compactmods.crafting.compat.jei;
+package dev.compactmods.crafting.integration.jei;
 
-import java.util.List;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.core.CCItems;
 import dev.compactmods.crafting.core.CCMiniaturizationRecipes;
-import dev.compactmods.crafting.recipes.setup.RecipeBase;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;

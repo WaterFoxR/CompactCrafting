@@ -2,7 +2,6 @@ package dev.compactmods.crafting.client;
 
 import dev.compactmods.crafting.CompactCrafting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

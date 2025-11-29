@@ -69,9 +69,12 @@ public class FieldInfoCommand {
 
     private static void outputStdFieldInfo(CommandSourceStack src, IMiniaturizationField field) {
         src.sendSuccess(()->Component.literal("Center: " + field.getCenter().toString()), false);
+        src.sendSuccess(()->Component.literal("isEnabled: " + field.enabled()), false);
         src.sendSuccess(()->Component.literal("Size: " + field.getFieldSize().getName()), false);
+        src.sendSuccess(()->Component.literal("State: " + field.getCraftingState().name()), false);
         field.getCurrentRecipe().ifPresent(rec -> {
-            src.sendSuccess(()->Component.literal("Recipe: " + rec.getRecipeIdentifier()), false);
+            src.sendSuccess(()->Component.literal("RecipeID: " + rec.getRecipeIdentifier()), false);
+            src.sendSuccess(()->Component.literal("Progress: " + field.getProgress() + " / " + rec.getCraftingTime()), false);
         });
     }
 }

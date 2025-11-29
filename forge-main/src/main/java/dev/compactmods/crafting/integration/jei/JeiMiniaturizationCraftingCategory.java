@@ -1,4 +1,4 @@
-package dev.compactmods.crafting.compat.jei;
+package dev.compactmods.crafting.integration.jei;
 
 import java.nio.FloatBuffer;
 import java.util.*;

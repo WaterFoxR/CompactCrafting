@@ -21,6 +21,7 @@ public class CodecExtensions {
                      bl -> DataResult.success(ForgeRegistries.BLOCKS.getKey(bl)))
              .stable();
 
+    @SuppressWarnings("deprecation")
     public static final Codec<ItemStack> FRIENDLY_ITEMSTACK = RecordCodecBuilder.create(i -> i.group(
             BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
             Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),

@@ -76,7 +76,6 @@ public enum MiniaturizationFieldSize implements StringRepresentable {
     /**
      * Gets the distance between the center of a field and a projector. (exclusive)
      *
-     * @return
      */
     public int getProjectorDistance() {
         return this.projectorDistance;

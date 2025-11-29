@@ -6,16 +6,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-public class ClientFieldUnwatchPacket {
-
-    private final BlockPos center;
-
-    public ClientFieldUnwatchPacket(BlockPos center) {
-        this.center = center;
-    }
+public record ClientFieldUnwatchPacket(BlockPos center) {
 
     public ClientFieldUnwatchPacket(FriendlyByteBuf buf) {
-        this.center = buf.readBlockPos();
+        this(buf.readBlockPos());
     }
 
     public static void encode(ClientFieldUnwatchPacket pkt, FriendlyByteBuf buf) {

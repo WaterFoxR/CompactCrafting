@@ -2,7 +2,6 @@ package dev.compactmods.crafting.field.events;
 
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.field.ActiveWorldFields;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

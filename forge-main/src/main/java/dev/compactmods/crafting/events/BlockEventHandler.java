@@ -2,7 +2,7 @@ package dev.compactmods.crafting.events;
 
 import dev.compactmods.crafting.CompactCrafting;
 import static dev.compactmods.crafting.CompactCrafting.MOD_ID;
-import dev.compactmods.crafting.field.FieldHelper;
+
 import dev.compactmods.crafting.field.MissingFieldsException;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.BlockPos;

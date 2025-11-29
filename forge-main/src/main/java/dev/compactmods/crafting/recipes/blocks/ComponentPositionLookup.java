@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import com.mojang.serialization.Codec;
 import dev.compactmods.crafting.api.components.IPositionalComponentLookup;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 public class ComponentPositionLookup implements IPositionalComponentLookup {
@@ -23,6 +22,7 @@ public class ComponentPositionLookup implements IPositionalComponentLookup {
         this.footprint = new BoundingBox(BlockPos.ZERO);
     }
 
+    @SuppressWarnings("deprecation")
     public IPositionalComponentLookup add(BlockPos location, String component) {
         components.putIfAbsent(location, component);
         componentTotals.putIfAbsent(component, 0);
@@ -45,6 +45,7 @@ public class ComponentPositionLookup implements IPositionalComponentLookup {
         return components.containsKey(location);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void setFootprint(int xSize, int zSize) {
         // size - 1 is because block already takes up a unit
@@ -87,7 +88,6 @@ public class ComponentPositionLookup implements IPositionalComponentLookup {
     /**
      * Get a collection of positions that are filled by a given component.
      *
-     * @return
      */
     public Stream<BlockPos> getPositionsForComponent(String component) {
         if (component == null)

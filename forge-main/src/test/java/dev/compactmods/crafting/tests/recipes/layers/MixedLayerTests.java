@@ -7,7 +7,6 @@ import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.components.IRecipeComponent;
 import dev.compactmods.crafting.api.field.MiniaturizationFieldSize;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeBlocks;
-import dev.compactmods.crafting.recipes.blocks.ComponentPositionLookup;
 import dev.compactmods.crafting.recipes.blocks.RecipeBlocks;
 import dev.compactmods.crafting.recipes.components.BlockComponent;
 import dev.compactmods.crafting.recipes.components.EmptyBlockComponent;
@@ -41,6 +40,7 @@ public class MixedLayerTests {
         return parsed.getOrThrow(false, test::fail);
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void can_create_layer_instance_manually(final GameTestHelper test) {
         MixedComponentRecipeLayer layer = new MixedComponentRecipeLayer();
@@ -69,6 +69,7 @@ public class MixedLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void can_create_mixed_layer(final GameTestHelper test) {
         JsonElement layerJson = FileHelper.getJsonFromFile("layers/mixed/basic.json");
@@ -107,6 +108,7 @@ public class MixedLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void MixedCanFetchAKnownGoodPosition(final GameTestHelper test) {
         MixedComponentRecipeLayer layer = getLayerFromFile(test, "layers/mixed/basic.json");
@@ -119,6 +121,7 @@ public class MixedLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void mixed_component_positions(final GameTestHelper test) {
         MixedComponentRecipeLayer layer = getLayerFromFile(test, "layers/mixed/basic.json");
@@ -169,7 +172,7 @@ public class MixedLayerTests {
         final RecipeBlocks blocks = RecipeBlocks.create(test.getLevel(), components, BlockSpaceUtil.getLayerBounds(MiniaturizationFieldSize.MEDIUM, 0));
 
         final Map<String, IRecipeComponent> allComponents = components.getAllComponents();
-        final int worldCompCount = allComponents.keySet().size();
+        final int worldCompCount = allComponents.size();
 
         final Set<String> layerComponents = layer.getComponents();
         final int layerCompCount = layerComponents.size();

@@ -72,7 +72,7 @@ public class BlockComponent implements IRecipeComponent, IRecipeBlockComponent {
 
         Property<?> prop = stateContainer.getProperty(propertyName);
         if (prop == null) {
-            CompactCrafting.RECIPE_LOGGER.warn("Not a valid property: " + propertyName);
+            CompactCrafting.RECIPE_LOGGER.warn("Not a valid property: {}", propertyName);
             return;
         }
 

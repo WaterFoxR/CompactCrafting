@@ -14,6 +14,7 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder(CompactCrafting.MOD_ID)
 public class DirectionUtilTests {
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanGetCrossAxis(final GameTestHelper test) {
         final Direction.Axis crossXAxis = DirectionUtil.getCrossDirectionAxis(Direction.Axis.X);

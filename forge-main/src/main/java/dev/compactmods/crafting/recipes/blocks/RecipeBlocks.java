@@ -130,11 +130,10 @@ public class RecipeBlocks implements IRecipeBlocks {
     /**
      * Gets the number of unique component keys in this set of blocks.
      *
-     * @return
      */
     @Override
     public int getNumberKnownComponents() {
-        return this.getKnownComponentTotals().keySet().size();
+        return this.getKnownComponentTotals().size();
     }
 
     @Override

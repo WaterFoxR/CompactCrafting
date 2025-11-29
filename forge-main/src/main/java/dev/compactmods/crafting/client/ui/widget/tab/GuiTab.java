@@ -2,7 +2,6 @@ package dev.compactmods.crafting.client.ui.widget.tab;
 
 import java.util.function.Consumer;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.client.ui.UiHelper;
 import dev.compactmods.crafting.client.ui.widget.renderable.IWidgetPostBackgroundRenderable;

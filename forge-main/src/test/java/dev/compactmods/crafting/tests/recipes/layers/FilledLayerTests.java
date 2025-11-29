@@ -45,6 +45,7 @@ public class FilledLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void null_dimensions_have_zero_blocks_filled(final GameTestHelper test) {
         final FilledComponentRecipeLayer layer = getLayerFromFile(test,"layers/filled/basic.json");
@@ -58,6 +59,7 @@ public class FilledLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanUpdateDimensions(final GameTestHelper test) {
         final FilledComponentRecipeLayer layer = getLayerFromFile(test, "layers/filled/basic.json");
@@ -74,6 +76,7 @@ public class FilledLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void ComponentPositionsAreCorrect(final GameTestHelper test) {
         final FilledComponentRecipeLayer layer = getLayerFromFile(test, "layers/filled/basic.json");
@@ -93,6 +96,7 @@ public class FilledLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void CanFetchComponentByPosition(final GameTestHelper test) {
         final FilledComponentRecipeLayer layer = getLayerFromFile(test, "layers/filled/basic.json");
@@ -107,6 +111,7 @@ public class FilledLayerTests {
         test.succeed();
     }
 
+    @SuppressWarnings("deprecation")
     @GameTest(template = GameTestTemplates.EMPTY)
     public static void oob_position_returns_empty(final GameTestHelper test) {
         final FilledComponentRecipeLayer layer = getLayerFromFile(test, "layers/filled/basic.json");

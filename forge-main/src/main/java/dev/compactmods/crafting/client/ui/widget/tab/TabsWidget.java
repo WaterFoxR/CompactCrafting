@@ -164,7 +164,7 @@ public class TabsWidget extends WidgetBase implements
         Vec3 realCoords = getRealRelativePos(mouseX, mouseY);
 
         boolean mouseOverAL = mouseX > 0 && mouseX <= 100;
-        CompactCrafting.LOGGER.debug(String.format("%s,%s", mouseX, mouseY));
+        CompactCrafting.LOGGER.debug("Mouse over left arrow: {}, {}", mouseX, mouseY);
 
         if (mouseOverAL)
             arrowLeftU += (2 * ARROW_TEXTURE_SIZE.x);

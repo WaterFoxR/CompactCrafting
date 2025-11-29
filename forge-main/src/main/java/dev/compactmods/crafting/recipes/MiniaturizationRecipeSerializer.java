@@ -22,7 +22,7 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
 
         if (parseResult.error().isPresent()) {
             DataResult.PartialResult<MiniaturizationRecipe> pr = parseResult.error().get();
-            CompactCrafting.RECIPE_LOGGER.error("Error loading recipe: " + pr.message());
+            CompactCrafting.RECIPE_LOGGER.error("Error loading recipe: {}", pr.message());
             return null;
         }
 
@@ -69,7 +69,7 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
             DataResult<MiniaturizationRecipe> parseResult = MiniaturizationRecipe.CODEC.parse(NbtOps.INSTANCE, nbt);
             if (parseResult.error().isPresent()) {
                 DataResult.PartialResult<MiniaturizationRecipe> pr = parseResult.error().get();
-                CompactCrafting.RECIPE_LOGGER.error("Error parsing recipe from NBT: " + pr.message());
+                CompactCrafting.RECIPE_LOGGER.error("Error parsing recipe from NBT: {}", pr.message());
                 return null;
             }
 
@@ -82,7 +82,7 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
             return recipe;
         }
         catch(Exception ex) {
-            CompactCrafting.RECIPE_LOGGER.error("Error reading recipe information from network: " + ex.getMessage());
+            CompactCrafting.RECIPE_LOGGER.error("Error reading recipe information from network: {}", ex.getMessage());
             return null;
         }
     }
@@ -95,7 +95,7 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
         // 使用CODEC将配方编码为NBT，然后写入缓冲区
         DataResult<Tag> encodeResult = MiniaturizationRecipe.CODEC.encodeStart(NbtOps.INSTANCE, recipe);
         if (encodeResult.error().isPresent()) {
-            CompactCrafting.RECIPE_LOGGER.error("Error encoding recipe to NBT: " + encodeResult.error().get().message());
+            CompactCrafting.RECIPE_LOGGER.error("Error encoding recipe to NBT: {}", encodeResult.error().get().message());
             return;
         }
 

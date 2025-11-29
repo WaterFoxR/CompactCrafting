@@ -22,6 +22,7 @@ public class ProxyRenderSetup {
         ItemBlockRenderTypes.setRenderLayer(CCBlocks.RESCAN_FIELD_PROXY_BLOCK.get(), RenderType.cutoutMipped());
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public static void onBlockColors(final RegisterColorHandlersEvent.Block colors) {
         // color the ring at the base of the proxy poles
@@ -29,6 +30,7 @@ public class ProxyRenderSetup {
         colors.getBlockColors().register(new FieldProxyColors.RescanBlock(), CCBlocks.RESCAN_FIELD_PROXY_BLOCK.get());
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public static void onItemColors(final RegisterColorHandlersEvent.Item itemColors) {
         itemColors.getItemColors().register(new FieldProxyColors.MatchItem(), CCItems.MATCH_PROXY_ITEM.get());

@@ -174,8 +174,7 @@ public class MiniaturizationRecipe extends RecipeBase implements IMiniaturizatio
     /**
      * Checks that a given field size can contain this recipe.
      *
-     * @param fieldSize
-     * @return
+     * @param fieldSize The field size to check against.
      */
     public boolean fitsInFieldSize(MiniaturizationFieldSize fieldSize) {
         int dim = fieldSize.getDimensions();

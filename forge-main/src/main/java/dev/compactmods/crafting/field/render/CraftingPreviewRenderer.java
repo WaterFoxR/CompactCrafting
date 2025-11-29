@@ -6,7 +6,6 @@ import com.mojang.math.Axis;
 import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.recipe.IMiniaturizationRecipe;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
-import dev.compactmods.crafting.client.render.CCRenderTypes;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
 import dev.compactmods.crafting.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -15,13 +14,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public class CraftingPreviewRenderer {
     public static void render(IMiniaturizationRecipe recipe, double progress, PoseStack stack, MultiBufferSource buffers, int light, int overlay) {

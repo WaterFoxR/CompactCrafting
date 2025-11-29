@@ -81,6 +81,7 @@ public abstract class BlockSpaceUtil {
         return getBoundsForBlocks(Arrays.asList(filled));
     }
 
+    @SuppressWarnings("deprecation")
     public static AABB getBoundsForBlocks(Collection<BlockPos> filled) {
         if (filled.size() == 0)
             return AABB.ofSize(Vec3.ZERO,0, 0, 0);
@@ -110,7 +111,6 @@ public abstract class BlockSpaceUtil {
      *
      * @param fieldBounds The bounds of the field itself.
      * @param pos         The position to normalize.
-     * @return
      */
     public static BlockPos normalizeLayerPosition(AABB fieldBounds, BlockPos pos) {
         return new BlockPos(
@@ -125,7 +125,6 @@ public abstract class BlockSpaceUtil {
      *
      * @param fieldBounds    The boundaries of the crafting field.
      * @param fieldPositions The non-air block positions in the field (world coordinates).
-     * @return
      */
     public static BlockPos[] normalizeLayerPositions(AABB fieldBounds, BlockPos[] fieldPositions) {
         // Normalize the block positions so the recipe can match easier

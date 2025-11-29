@@ -1,4 +1,4 @@
-package dev.compactmods.crafting.compat.theoneprobe;
+package dev.compactmods.crafting.integration.theoneprobe;
 
 import net.minecraftforge.fml.InterModComms;
 

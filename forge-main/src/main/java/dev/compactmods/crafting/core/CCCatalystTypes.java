@@ -14,7 +14,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-@SuppressWarnings("unchecked")
 @Mod.EventBusSubscriber(modid = CompactCrafting.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CCCatalystTypes {
 

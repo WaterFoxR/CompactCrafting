@@ -10,24 +10,19 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 
-public class FieldRecipeChangedPacket {
+public record FieldRecipeChangedPacket(BlockPos fieldCenter, @Nullable ResourceLocation recipe) {
 
-    private final BlockPos fieldCenter;
-
-    @Nullable
-    private final ResourceLocation recipe;
-
-    public FieldRecipeChangedPacket(IMiniaturizationField field) {
-        this.fieldCenter = field.getCenter();
-        this.recipe = field.getCurrentRecipe().map(IMiniaturizationRecipe::getRecipeIdentifier).orElse(null);
+    public static FieldRecipeChangedPacket fromField(IMiniaturizationField field) {
+        return new FieldRecipeChangedPacket(
+                field.getCenter(),
+                field.getCurrentRecipe().map(IMiniaturizationRecipe::getRecipeIdentifier).orElse(null)
+        );
     }
 
-    public FieldRecipeChangedPacket(FriendlyByteBuf buf) {
-        this.fieldCenter = buf.readBlockPos();
-        if(buf.readBoolean())
-            this.recipe = ResourceLocation.tryParse(buf.readUtf());
-        else
-            this.recipe = null;
+    public static FieldRecipeChangedPacket fromBuffer(FriendlyByteBuf buf) {
+        BlockPos center = buf.readBlockPos();
+        ResourceLocation recipe = buf.readBoolean() ? ResourceLocation.tryParse(buf.readUtf()) : null;
+        return new FieldRecipeChangedPacket(center, recipe);
     }
 
     public static void encode(FieldRecipeChangedPacket pkt, FriendlyByteBuf buf) {

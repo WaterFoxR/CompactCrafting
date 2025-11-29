@@ -61,7 +61,7 @@ public abstract class ProjectorHelper {
         Optional<Direction> initialFacing = FieldProjectorBlock.getDirection(world, initial);
 
         // Initial wasn't a valid field projector, can't get direction to look in
-        if (!initialFacing.isPresent())
+        if (initialFacing.isEmpty())
             return false;
 
         Direction initFacing = initialFacing.get();

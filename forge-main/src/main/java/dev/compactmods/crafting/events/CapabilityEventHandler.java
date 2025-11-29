@@ -7,7 +7,6 @@ import dev.compactmods.crafting.api.projector.IProjectorRenderInfo;
 import dev.compactmods.crafting.client.render.ClientProjectorRenderInfo;
 import dev.compactmods.crafting.core.CCCapabilities;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;

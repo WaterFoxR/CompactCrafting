@@ -5,7 +5,6 @@ import dev.compactmods.crafting.core.CCBlocks;
 import dev.compactmods.crafting.projector.FieldProjectorBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
