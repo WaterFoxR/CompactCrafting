@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.compactmods.crafting.CompactCrafting;
 import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
+import dev.compactmods.crafting.client.ClientUtilities;
 import dev.compactmods.crafting.client.fakeworld.RenderingWorld;
 import dev.compactmods.crafting.client.ui.ScreenArea;
 import dev.compactmods.crafting.core.CCBlocks;
@@ -35,6 +36,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -52,6 +54,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.fml.earlydisplay.ElementShader;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
@@ -72,12 +75,16 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
     private boolean singleLayer = false;
     private int singleLayerOffset = 0;
+    private double previewRotation = 0.0d;
+    private boolean rotatePreview = true;
     private boolean debugMode = false;
 
+    private ScreenArea backgroundArea = new ScreenArea(27, 0, 70, 70);
     private ScreenArea explodeToggle = new ScreenArea(30, 75, 10, 10);
     private ScreenArea layerUp = new ScreenArea(55, 75, 10, 10);
     private ScreenArea layerSwap = new ScreenArea(70, 75, 10, 10);
     private ScreenArea layerDown = new ScreenArea(85, 75, 10, 10);
+    private ScreenArea rotateControl = new ScreenArea(100, 75, 10, 10);
 
     /**
      * Whether the preview is exploded (expanded) or not.
@@ -245,6 +252,10 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
                 return List.of(Component.translatable("compactcrafting.jei.layer_down"));
         }
 
+        if (rotateControl.contains(mouseX, mouseY)) {
+            return List.of(Component.translatable("compactcrafting.jei.rotate_preview"));
+        }
+
         return Collections.emptyList();
     }
 
@@ -282,6 +293,19 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
                 return true;
             }
+
+            if (rotateControl.contains(mouseX, mouseY)) {
+                rotatePreview = !rotatePreview;
+                handler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+
+
+        }
+        // Todo: 添加更多预览区域控制
+        if (backgroundArea.contains(mouseX, mouseY) && ClientUtilities.isDebugScreenOpen()) {
+            CompactCrafting.ClientPlayerTell(input.getType().name()+input.getValue());
+            return true;
         }
 
         return false;
@@ -308,7 +332,6 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
     @Override
     public void draw(MiniaturizationRecipe recipe, IRecipeSlotsView slots, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        PoseStack pose = guiGraphics.pose();
         AABB dims = recipe.getDimensions();
 
         Window mainWindow = Minecraft.getInstance().getWindow();
@@ -384,7 +407,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             float previewScale = (float) ((3 + Math.exp(3 - (recipeAvgDim / 5))) / explodeMulti);
             mx.scale(previewScale, -previewScale, previewScale);
 
-            drawActualRecipe(recipe, mx, dims, buffers);
+            drawActualRecipe(recipe, guiGraphics, dims, buffers);
 
             mx.popPose();
 
@@ -396,12 +419,13 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         }
     }
 
-    private void drawActualRecipe(MiniaturizationRecipe recipe, PoseStack mx, AABB dims, MultiBufferSource.BufferSource buffers) {
+    private void drawActualRecipe(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, AABB dims, MultiBufferSource.BufferSource buffers) {
+        PoseStack mx = guiGraphics.pose();
         double gameTime = Minecraft.getInstance().level.getGameTime();
-        double test = Math.toDegrees(gameTime) / 15;
-        mx.mulPose(new Quaternionf().rotationXYZ(
-                35f * ((float) Math.PI / 180f),
-                (float) -test * ((float) Math.PI / 180f),
+        previewRotation = rotatePreview?previewRotation +1:previewRotation;
+                mx.mulPose(new Quaternionf().rotationXYZ(
+                        (float) Math.toRadians(35f),
+                        (float) Math.toRadians(-previewRotation),
                 0));
 
         double ySize = recipe.getDimensions().getYsize();
@@ -423,7 +447,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         );
 
         for (int y : renderLayers) {
-            recipe.getLayer(y).ifPresent(l -> renderRecipeLayer(recipe, mx, buffers, l, y));
+            recipe.getLayer(y).ifPresent(l -> renderRecipeLayer(recipe, guiGraphics, buffers, l, y));
         }
     }
 
@@ -435,24 +459,30 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         ResourceLocation sprites = CompactCrafting.modRL("textures/gui/jei-sprites.png");
 
         if (exploded) {
-            drawScaledTexture(guiGraphics, sprites, explodeToggle, 20, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, explodeToggle, 20, 0, 20, 20, 160, 20);
         } else {
-            drawScaledTexture(guiGraphics, sprites, explodeToggle, 0, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, explodeToggle, 0, 0, 20, 20, 160, 20);
+        }
+
+        if (rotatePreview) {
+            drawScaledTexture(guiGraphics, sprites, rotateControl, 140, 0, 20, 20, 160, 20);
+        } else {
+            drawScaledTexture(guiGraphics, sprites, rotateControl, 120, 0, 20, 20, 160, 20);
         }
 
         // Layer change buttons
         if (singleLayer) {
-            drawScaledTexture(guiGraphics, sprites, layerSwap, 60, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, layerSwap, 60, 0, 20, 20, 160, 20);
         } else {
-            drawScaledTexture(guiGraphics, sprites, layerSwap, 40, 0, 20, 20, 120, 20);
+            drawScaledTexture(guiGraphics, sprites, layerSwap, 40, 0, 20, 20, 160, 20);
         }
 
         if (singleLayer) {
             if (singleLayerOffset < dims.getYsize() - 1)
-                drawScaledTexture(guiGraphics, sprites, layerUp, 80, 0, 20, 20, 120, 20);
+                drawScaledTexture(guiGraphics, sprites, layerUp, 80, 0, 20, 20, 160, 20);
 
             if (singleLayerOffset > 0) {
-                drawScaledTexture(guiGraphics, sprites, layerDown, 100, 0, 20, 20, 120, 20);
+                drawScaledTexture(guiGraphics, sprites, layerDown, 100, 0, 20, 20, 160, 20);
             }
         }
 
@@ -461,7 +491,8 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         mx.popPose();
     }
 
-    private void renderRecipeLayer(MiniaturizationRecipe recipe, PoseStack mx, MultiBufferSource.BufferSource buffers, IRecipeLayer l, int layerY) {
+    private void renderRecipeLayer(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, MultiBufferSource.BufferSource buffers, IRecipeLayer l, int layerY) {
+        PoseStack mx = guiGraphics.pose();
         // Begin layer
         mx.pushPose();
 
@@ -479,7 +510,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             Optional<String> componentForPosition = l.getComponentForPosition(zeroedPos);
             componentForPosition
                     .flatMap(recipe.getComponents()::getBlock)
-                    .ifPresent(comp -> renderComponent(mx, buffers, comp, filledPos));
+                    .ifPresent(comp -> renderComponent(guiGraphics, buffers, comp, filledPos));
 
             mx.popPose();
         });
@@ -488,7 +519,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         mx.popPose();
     }
 
-    private void renderComponent(PoseStack mx, MultiBufferSource.BufferSource buffers, IRecipeBlockComponent state, BlockPos filledPos) {
+    private void renderComponent(GuiGraphics guiGraphics, MultiBufferSource.BufferSource buffers, IRecipeBlockComponent state, BlockPos filledPos) {
         // TODO - Render switching at fixed interval
         if (state.didErrorRendering())
             return;
@@ -503,7 +534,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             if (be != null)
                 data = be.getModelData();
         }
-
+        PoseStack mx = guiGraphics.pose();
         try {
             // TODO: Revisit render types
             blocks.renderSingleBlock(state1,
@@ -511,7 +542,7 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
                     buffers,
                     LightTexture.FULL_SKY,
                     OverlayTexture.NO_OVERLAY,
-                    data, null);
+                    data, RenderType.cutout());
         } catch (Exception e) {
             state.markRenderingErrored();
 

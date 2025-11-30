@@ -9,7 +9,7 @@ license="MIT"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
 modId="compactcrafting"
-version="4.0.0"
+version="4.0.2"
 displayName="Compact Crafting"
 authors="RobotGryphon and Zorn_Taov" #optional
 description='''
