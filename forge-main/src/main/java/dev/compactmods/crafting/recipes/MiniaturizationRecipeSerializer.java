@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.compactmods.crafting.CompactCrafting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("NullableProblems")
 public class MiniaturizationRecipeSerializer implements RecipeSerializer<MiniaturizationRecipe> {
 
     @Override
@@ -45,19 +47,6 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
             return null;
         }
 
-//        try {
-//            final MiniaturizationRecipe recipe = buffer.readWithCodec(MiniaturizationRecipe.CODEC);
-//            recipe.setId(recipeId);
-//
-//            CompactCrafting.LOGGER.debug("Finished recipe read: {}", recipeId);
-//
-//            return recipe;
-//        }
-//
-//        catch(EncoderException ex) {
-//            CompactCrafting.RECIPE_LOGGER.error("Error reading recipe information from network: " + ex.getMessage());
-//            return null;
-//        }
         try {
             // 读取NBT数据并使用CODEC解析
             CompoundTag nbt = buffer.readNbt();
@@ -91,7 +80,6 @@ public class MiniaturizationRecipeSerializer implements RecipeSerializer<Miniatu
     public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull MiniaturizationRecipe recipe) {
         CompactCrafting.LOGGER.debug("Sending recipe over network: {}", recipe.getRecipeIdentifier());
 //        buffer.writeWithCodec(MiniaturizationRecipe.CODEC, recipe);
-        // 使用CODEC将配方编码为NBT，然后写入缓冲区
         // 使用CODEC将配方编码为NBT，然后写入缓冲区
         DataResult<Tag> encodeResult = MiniaturizationRecipe.CODEC.encodeStart(NbtOps.INSTANCE, recipe);
         if (encodeResult.error().isPresent()) {

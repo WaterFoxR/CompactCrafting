@@ -15,4 +15,13 @@ public class ModBusEvents {
         if (ModList.get().isLoaded("theoneprobe"))
             TheOneProbeCompat.sendIMC();
     }
+
+    @SubscribeEvent
+    public static void onInterModEnqueue(final InterModEnqueueEvent event) {
+        // KubeJS集成
+        if (ModList.get().isLoaded("kubejs")) {
+            CompactCrafting.LOGGER.info("KubeJS detected, enabling Compact Crafting integration");
+            // 可以在这里添加KubeJS特定的初始化逻辑
+        }
+    }
 }

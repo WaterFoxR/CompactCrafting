@@ -41,6 +41,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+@SuppressWarnings("NullableProblems")
 public class MiniaturizationRecipe extends RecipeBase implements IMiniaturizationRecipe {
 
     private ResourceLocation id;
@@ -193,7 +194,7 @@ public class MiniaturizationRecipe extends RecipeBase implements IMiniaturizatio
         }
 
         // We know that the recipe will at least fit inside the current projection field
-        AABB filledBounds = blocks.getFilledBounds();
+//        AABB filledBounds = blocks.getFilledBounds();
 
         Rotation[] validRotations = Rotation.values();
 
@@ -214,7 +215,7 @@ public class MiniaturizationRecipe extends RecipeBase implements IMiniaturizatio
                 layerRotationMatches.get(Rotation.NONE).add(entry.getKey());
 
             // Symmetrical layers require symmetric footprints
-            // We could clean this up by doing 180 flips but extra math, we can fallback for now
+            // We could clean this up by doing 180 flips but extra math, we can fall_back for now
             if (layer instanceof ISymmetricalLayer && (dimensions.getXsize() == dimensions.getZsize())) {
                 if (!firstMatched) {
                     if (matchLogging)

@@ -61,7 +61,7 @@ public class MiniaturizationField implements IMiniaturizationField {
     @Nullable
     private MiniaturizationRecipe currentRecipe = null;
     private StructureTemplate matchedBlocks;
-    private Set<Item> matchedCatalysts;
+    private Set<ItemStack> matchedCatalysts;
 
     @Nullable
     private ResourceLocation recipeId = null;
@@ -368,7 +368,7 @@ public class MiniaturizationField implements IMiniaturizationField {
         if (!catalystEntities.isEmpty()) {
 
             matchedCatalysts = catalystEntities.stream()
-                    .map((ItemEntity t) -> t.getItem().getItem())
+                    .map(ItemEntity::getItem)
                     .collect(Collectors.toSet());
 
 
@@ -377,14 +377,15 @@ public class MiniaturizationField implements IMiniaturizationField {
                     .orElse(null);
 
             // Only remove items and clear the field on servers
+            boolean consumed = false;
             if (!level.isClientSide) {
-                CraftingHelper.consumeCatalystItem(catalystEntities.get(0), 1);
+                consumed = CraftingHelper.consumeCatalystItem(catalystEntities.get(0), currentRecipe.getCatalyst().getPossible().stream().findFirst().get().getCount());
+                if(consumed){clearBlocks();}
+            }
+            if(!consumed){return;}
 
-                // We know the "recipe" in the field is an exact match already, so wipe the field
-                clearBlocks();
-            } else {
+            if(level.isClientSide) {
                 for (int i = 0; i < 5; i++) {
-                    //noinspection DataFlowIssue
                     level.addParticle(ParticleTypes.LARGE_SMOKE,
                             foundPosition.x + level.random.nextDouble(),
                             foundPosition.y + level.random.nextDouble(),
@@ -610,10 +611,10 @@ public class MiniaturizationField implements IMiniaturizationField {
             if (restoreCatalyst) {
                 final BlockPos northLoc = size.getProjectorLocationForDirection(center, Direction.NORTH);
 
-                for (Item cat : matchedCatalysts) {
+                for (ItemStack cat : matchedCatalysts) {
                     final ItemEntity ie = new ItemEntity(level,
                             northLoc.getX(), center.getY() + 1.5f, northLoc.getZ(),
-                            new ItemStack(cat));
+                            cat);
 
                     // ie.setNoGravity(true);
 

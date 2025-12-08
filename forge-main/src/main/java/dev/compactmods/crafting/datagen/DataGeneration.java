@@ -1,6 +1,7 @@
 package dev.compactmods.crafting.datagen;
 
 import dev.compactmods.crafting.CompactCrafting;
+import dev.compactmods.crafting.integration.kubejs.CompactCraftingKubeJSPlugin;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

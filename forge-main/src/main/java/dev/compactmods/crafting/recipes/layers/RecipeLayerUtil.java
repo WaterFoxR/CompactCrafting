@@ -13,6 +13,8 @@ public final class RecipeLayerUtil {
     private RecipeLayerUtil() {
     }
 
+
+
     public static IRecipeBlocks rotate(IRecipeBlocks original, Rotation rotation) {
         if (rotation == Rotation.NONE) {
             return new RecipeBlocks(original);

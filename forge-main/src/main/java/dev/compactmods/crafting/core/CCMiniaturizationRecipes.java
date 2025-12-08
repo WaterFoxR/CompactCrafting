@@ -20,6 +20,7 @@ public class CCMiniaturizationRecipes {
     public static final RegistryObject<RecipeSerializer<MiniaturizationRecipe>> MINIATURIZATION_SERIALIZER = RECIPES.register("miniaturization", MiniaturizationRecipeSerializer::new);
 
     public static final ResourceLocation MINIATURIZATION_RECIPE_TYPE_ID = CompactCrafting.modRL("miniaturization_recipe");
+    public static final ResourceLocation MINIATURIZATION_RECIPE_TYPE = CompactCrafting.modRL("miniaturization");
 
     public static final RegistryObject<RecipeType<MiniaturizationRecipe>> MINIATURIZATION_RECIPE = RECIPE_TYPES.register(MINIATURIZATION_RECIPE_TYPE_ID.getPath(),
             () -> RecipeType.simple(MINIATURIZATION_RECIPE_TYPE_ID));

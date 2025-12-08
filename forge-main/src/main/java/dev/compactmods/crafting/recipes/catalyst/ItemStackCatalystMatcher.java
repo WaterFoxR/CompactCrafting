@@ -19,31 +19,36 @@ public class ItemStackCatalystMatcher implements ICatalystMatcher, CatalystType<
 
     public static final Codec<ItemStackCatalystMatcher> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.fieldOf("item").forGetter((x) -> ForgeRegistries.ITEMS.getKey(x.item)),
-            CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(ItemStackCatalystMatcher::getNbtTag)
+            CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(ItemStackCatalystMatcher::getNbtTag),
+            Codec.INT.optionalFieldOf("Count").forGetter(ItemStackCatalystMatcher::getCount)
     ).apply(i, ItemStackCatalystMatcher::new));
 
     private final Predicate<ItemStack> nbtMatcher;
 
     private final Item item;
+    private final Integer count;
     private final CompoundTag nbt;
 
     public ItemStackCatalystMatcher() {
         this.item = null;
         this.nbtMatcher = (stack) -> true;
         this.nbt = null;
+        this.count = 1;
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public ItemStackCatalystMatcher(ResourceLocation item, Optional<CompoundTag> nbt) {
+    public ItemStackCatalystMatcher(ResourceLocation item, Optional<CompoundTag> nbt, Optional<Integer> count) {
         this.item = ForgeRegistries.ITEMS.getValue(item);
         this.nbtMatcher = buildMatcher(nbt.orElse(null));
         this.nbt = nbt.orElse(null);
+        this.count = count.orElse(1);
     }
 
     public ItemStackCatalystMatcher(ItemStack stack) {
         this.item = stack.getItem();
         this.nbtMatcher = buildMatcher(stack.getOrCreateTag());
         this.nbt = stack.getTag();
+        this.count = stack.getCount();
     }
 
     private Predicate<ItemStack> buildMatcher(CompoundTag filter) {
@@ -71,6 +76,10 @@ public class ItemStackCatalystMatcher implements ICatalystMatcher, CatalystType<
         return Optional.ofNullable(nbt);
     }
 
+    public Optional<Integer> getCount() {
+        return Optional.of(count);
+    }
+
     @Override
     public CatalystType<?> getType() {
         return CCCatalystTypes.ITEM_STACK_CATALYST.get();
@@ -81,7 +90,7 @@ public class ItemStackCatalystMatcher implements ICatalystMatcher, CatalystType<
         if(nbt == null)
             return Set.of(new ItemStack(item));
 
-        final var withNbt = new ItemStack(item, 1);
+        final var withNbt = new ItemStack(item, count);
         withNbt.setTag(nbt);
         return Set.of(withNbt);
     }

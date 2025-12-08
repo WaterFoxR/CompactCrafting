@@ -155,10 +155,25 @@ repositories {
     maven("https://dvs1.progwml6.com/files/maven") {
         name = "Progwml Repo"
     }
+
+    // Kubejs
+    maven(url = "https://maven.latvian.dev/releases") {
+        content {
+            includeGroup("dev.latvian.mods")
+            includeGroup("dev.latvian.apps")
+        }
+    }
+
+    maven(url = "https://jitpack.io") {
+        content {
+            includeGroup("com.github.rtyley")
+        }
+    }
 }
 
 val jei_version: String? by extra
 val jei_mc_version: String by extra
+
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
@@ -179,6 +194,15 @@ dependencies {
     compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge-api:${jei_version}"))
     runtimeOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"))
+
+    // KubeJS
+    implementation(fg.deobf("curse.maven:kubejs-238086:5853326"))
+    // Rhino (KubeJS的JavaScript引擎)
+    implementation(fg.deobf("curse.maven:rhino-416294:6186971"))
+    // Architectury API (KubeJS的前置)
+    implementation(fg.deobf("curse.maven:architectury-api-419699:5137938"))
+    // ProbeJS (用于调试KubeJS 配方)
+    runtimeOnly(fg.deobf("curse.maven:probejs-legacy-956446:6773935"))
 
     // The One Probe
     implementation(fg.deobf("curse.maven:theoneprobe-245211:6106996"))
