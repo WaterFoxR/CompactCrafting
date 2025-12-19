@@ -13,6 +13,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.Minecraft;
 
+import javax.json.Json;
+
 public interface MiniaturizationRecipeSchema {
     // 必须字段
     RecipeKey<OutputItem[]> OUTPUTS = ItemComponents.OUTPUT_ARRAY.key("outputs");
@@ -48,23 +50,28 @@ public interface MiniaturizationRecipeSchema {
         @Override
         public void serialize() {
             super.serialize();
-            this.json.remove("catalyst");
-            this.json.add("catalyst", InputItemToCCJson(CATALYST));
-
-            this.json.remove("outputs");
-            this.json.add("outputs", OutputItemsToCCJson(OUTPUTS));
+//            this.json.remove("catalyst");
+//            this.json.add("catalyst", InputItemToCCJson(CATALYST));
+//
+//            this.json.remove("outputs");
+//            this.json.add("outputs", OutputItemsToCCJson(OUTPUTS));
         }
 
         public JsonObject InputItemToCCJson(RecipeKey<InputItem> key) {
             InputItem inputItem = this.getValue(key);
             JsonObject itemObject = inputItem.toJsonJS().getAsJsonObject();
 
-            String id = itemObject.get("ingredient").getAsJsonObject().get("item").getAsString();
+
+            JsonObject ingredientJson = itemObject.get("ingredient").getAsJsonObject();
+            String id = ingredientJson.get("item").getAsString();
             int count = inputItem.count;
 
             JsonObject CCItemJson = new JsonObject();
             CCItemJson.addProperty("id", id);
             CCItemJson.addProperty("Count", count);
+            if(ingredientJson.has("nbt")){
+                CCItemJson.addProperty("nbt", ingredientJson.get("nbt").getAsString());
+            }
 
             return CCItemJson;
         }
@@ -80,22 +87,15 @@ public interface MiniaturizationRecipeSchema {
                 JsonObject CCItemJson = new JsonObject();
                 CCItemJson.addProperty("id", id);
                 CCItemJson.addProperty("Count", count);
+                if(outputItem.getNbt()!=null){
+                    CCItemJson.addProperty("tag", outputItem.getNbt().getAsString());
+                }
 
                 CCOutputItemsJson.add(CCItemJson);
             }
             return CCOutputItemsJson;
         }
 
-
-        @Override
-        public void afterLoaded() {
-            if(Minecraft.getInstance().options.advancedItemTooltips) {
-                CompactCrafting.ClientPlayerTell("显示所有值:" + this.getAllValueMap());
-                CompactCrafting.ClientPlayerTell("显示原始Json:" + this.originalJson);
-                CompactCrafting.ClientPlayerTell("显示Json:" + this.json);
-            }
-            super.afterLoaded();
-        }
     }
 
     RecipeSchema SCHEMA = new RecipeSchema(

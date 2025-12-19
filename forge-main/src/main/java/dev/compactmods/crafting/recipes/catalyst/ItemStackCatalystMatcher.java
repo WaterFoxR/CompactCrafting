@@ -87,12 +87,12 @@ public class ItemStackCatalystMatcher implements ICatalystMatcher, CatalystType<
 
     @Override
     public Set<ItemStack> getPossible() {
-        if(nbt == null)
-            return Set.of(new ItemStack(item));
+        if(nbt.isEmpty())
+            return Set.of(new ItemStack(item, count));
 
-        final var withNbt = new ItemStack(item, count);
-        withNbt.setTag(nbt);
-        return Set.of(withNbt);
+        ItemStack NbtItem = new ItemStack(item, count);
+        NbtItem.setTag(nbt);
+        return Set.of(NbtItem);
     }
 
     @Override

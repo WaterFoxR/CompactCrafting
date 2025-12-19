@@ -40,5 +40,7 @@
   "compactcrafting.jei.all_layers_mode": "View All Layers",
   "compactcrafting.jei.single_layer_mode": "Single Layer Mode",
   "compactcrafting.jei.layer_up": "Layer Up",
-  "compactcrafting.jei.layer_down": "Layer Down"
+  "compactcrafting.jei.layer_down": "Layer Down",
+  "compactcrafting.jei.catalyst.nbt": " Requires NBT Match",
+  "compactcrafting.jei.shift": "Hold Shift for more info"
 }

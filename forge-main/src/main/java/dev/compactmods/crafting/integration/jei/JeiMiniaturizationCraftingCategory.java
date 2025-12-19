@@ -10,12 +10,14 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.compactmods.crafting.CompactCrafting;
+import dev.compactmods.crafting.api.catalyst.CatalystType;
 import dev.compactmods.crafting.api.components.IRecipeBlockComponent;
 import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
 import dev.compactmods.crafting.client.ClientUtilities;
 import dev.compactmods.crafting.client.fakeworld.RenderingWorld;
 import dev.compactmods.crafting.client.ui.ScreenArea;
 import dev.compactmods.crafting.core.CCBlocks;
+import dev.compactmods.crafting.core.CCCatalystTypes;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
 import dev.compactmods.crafting.recipes.components.BlockComponent;
 import dev.compactmods.crafting.util.BlockSpaceUtil;
@@ -33,6 +35,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -42,6 +45,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -166,9 +171,20 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
         if (!recipe.getCatalyst().matches(ItemStack.EMPTY)) {
             catalystSlot.addItemStacks(new ArrayList<>(recipe.getCatalyst().getPossible()))
-                    .addTooltipCallback((slots, c) -> c.add(CATALYST));
+                    .addTooltipCallback((slots, c) -> {
+                        slots.getDisplayedItemStack().ifPresent((stack) -> {
+                            if (stack.getTag() != null) {
+                                c.add(Component.translatable("compactcrafting.jei.catalyst.nbt").withStyle(ChatFormatting.RED));
+                                if (Screen.hasShiftDown()) {
+                                    c.add(NbtUtils.toPrettyComponent(stack.getTag()));
+                                } else {
+                                    c.add(Component.translatable("compactcrafting.jei.shift").withStyle(ChatFormatting.GOLD));
+                                }
+                            }
+                        });
+                        c.add(CATALYST);
+                    });
         }
-
         return catalystSlot;
     }
 
@@ -303,10 +319,10 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
         }
         // Todo: 添加更多预览区域控制
-        if (backgroundArea.contains(mouseX, mouseY) && ClientUtilities.isDebugScreenOpen()) {
-            CompactCrafting.ClientPlayerTell(input.getType().name()+input.getValue());
-            return true;
-        }
+//        if (backgroundArea.contains(mouseX, mouseY) && ClientUtilities.isDebugScreenOpen()) {
+//            CompactCrafting.ClientPlayerTell(input.getType().name()+input.getValue());
+//            return true;
+//        }
 
         return false;
     }

@@ -40,5 +40,7 @@
   "compactcrafting.jei.all_layers_mode": "显示所有层",
   "compactcrafting.jei.single_layer_mode": "单层模式",
   "compactcrafting.jei.layer_up": "上一层",
-  "compactcrafting.jei.layer_down": "下一层"
+  "compactcrafting.jei.layer_down": "下一层",
+  "compactcrafting.jei.catalyst.nbt": "需要匹配NBT",
+  "compactcrafting.jei.shift": "按住Shift显示更多信息"
 }
