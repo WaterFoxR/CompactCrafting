@@ -75,10 +75,19 @@ public class ClientConfig {
 
     private static int extractHexColor(String hex, int def) {
         try {
-            if (hex.startsWith("#"))
-                return Integer.parseInt(hex.substring(1), 16);
-            else
+            // 检查是否以 # 开头
+            if (!hex.startsWith("#")) {
                 return def;
+            }
+            
+            // 解析颜色
+            int color = Integer.parseInt(hex.substring(1), 16);
+            
+            // 确保有 alpha 通道 (255 = 完全不透明)
+            int red = FastColor.ARGB32.red(color);
+            int green = FastColor.ARGB32.green(color);
+            int blue = FastColor.ARGB32.blue(color);
+            return FastColor.ARGB32.color(255, red, green, blue);
         } catch (NumberFormatException nfe) {
             CompactCrafting.LOGGER.warn("Bad config value for projector color: {}", hex);
             return def;

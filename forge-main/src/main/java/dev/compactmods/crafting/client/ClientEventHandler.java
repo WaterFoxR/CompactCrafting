@@ -53,6 +53,7 @@ public class ClientEventHandler {
 
         if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_PARTICLES)) {
             doFieldPreviewRender(event, mc);
+            doProjectorPreviewRender(event, mc);
         }
     }
 
@@ -83,6 +84,13 @@ public class ClientEventHandler {
                             stack.popPose();
                         }));
         buffers.endBatch();
+    }
+
+    private static void doProjectorPreviewRender(RenderLevelStageEvent event, Minecraft mc) {
+        if (mc.player == null) return;
+
+        mc.player.getCapability(CCCapabilities.TEMP_PROJECTOR_RENDERING)
+                .ifPresent(renderInfo -> renderInfo.render(event.getPoseStack()));
     }
 
     @NotNull

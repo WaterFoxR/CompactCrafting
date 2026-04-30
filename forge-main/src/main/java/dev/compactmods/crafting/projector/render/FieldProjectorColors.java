@@ -19,7 +19,7 @@ public class FieldProjectorColors {
             return switch (tintIndex) {
                 case 0 -> ClientConfig.projectorOffColor;
                 case 1 -> 0xFF2494cd;
-                default -> 0x00000000;
+                default -> 0xFFFFFFFF;
             };
         }
     }

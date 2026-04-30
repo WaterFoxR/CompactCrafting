@@ -3,6 +3,7 @@ package dev.compactmods.crafting.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.compactmods.crafting.client.ClientConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -81,8 +82,25 @@ public class GhostRenderer {
     }
 
     private static void addQuad(BlockState state, @Nullable BlockPos pos, PoseStack matrix, Minecraft mc, BlockColors colors, VertexConsumer builder, BakedQuad quad, float alpha) {
-        int color = quad.isTinted() ? colors.getColor(state, mc.level, pos, quad.getTintIndex()) :
-                FastColor.ARGB32.color(255, 255, 255, 255);
+        int color;
+        if (quad.isTinted()) {
+            // 如果 pos 为 null，直接使用默认颜色而不是让颜色处理器返回错误
+            if (pos == null) {
+                color = switch (quad.getTintIndex()) {
+                    case 0 -> ClientConfig.projectorOffColor;
+                    case 1 -> 0xFF2494cd;
+                    default -> 0xFFFFFFFF;
+                };
+            } else {
+                color = colors.getColor(state, mc.level, pos, quad.getTintIndex());
+                // 如果颜色是透明的，使用默认白色
+                if (FastColor.ARGB32.alpha(color) == 0) {
+                    color = 0xFFFFFFFF;
+                }
+            }
+        } else {
+            color = FastColor.ARGB32.color(255, 255, 255, 255);
+        }
 
         final float red = FastColor.ARGB32.red(color) / 255f;
         final float green = FastColor.ARGB32.green(color) / 255f;

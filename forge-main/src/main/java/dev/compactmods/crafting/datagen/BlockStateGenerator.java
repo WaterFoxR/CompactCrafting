@@ -106,6 +106,10 @@ public class BlockStateGenerator extends BlockStateProvider {
                         case UP:
                             face.texture("#pole").uvs(0, 0, 2, 2).end();
                             break;
+
+                        case DOWN:
+                            face.texture("#pole").uvs(0, 0, 2, 2).end();
+                            break;
                     }
                 })
                 .end();
@@ -210,6 +214,10 @@ public class BlockStateGenerator extends BlockStateProvider {
 
                         case DOWN:
                             face.texture("#dish_connector").uvs(1, 3, 3, 4).end();
+                            break;
+
+                        case WEST:
+                            face.texture("#dish_connector").uvs(1, 1, 3, 3).end();
                             break;
 
                         case EAST:
