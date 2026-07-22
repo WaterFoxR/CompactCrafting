@@ -432,6 +432,7 @@ public class MiniaturizationField implements IMiniaturizationField {
                 .getAllRecipesFor(CCMiniaturizationRecipes.MINIATURIZATION_RECIPE.get())
                 .stream()
                 .filter(recipe -> BlockSpaceUtil.boundsFitsInside(recipe.getDimensions(), filledBounds))
+                .filter(recipe -> !dev.compactmods.crafting.integration.jei.JeiMiniaturizationPlugin.shouldHideRecipe(recipe.getId()))
                 .collect(Collectors.toSet());
 
         /*

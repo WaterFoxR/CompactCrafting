@@ -1,8 +1,8 @@
 package dev.compactmods.crafting.integration.kubejs;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.compactmods.crafting.CompactCrafting;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -10,10 +10,8 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import net.minecraft.client.Minecraft;
-
-import javax.json.Json;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public interface MiniaturizationRecipeSchema {
     // 必须字段
@@ -46,54 +44,166 @@ public interface MiniaturizationRecipeSchema {
             return this;
         }
 
+        /**
+         * Override deserialize to handle CompactCrafting's item format ({id, Count, tag/nbt})
+         * instead of KubeJS's format ({item, count, nbt}).
+         * Temporarily converts CC format fields to KubeJS format before calling super,
+         * then restores the original CC format JSON for the vanilla recipe parser.
+         */
+        @Override
+        public void deserialize(boolean merge) {
+            // Save original fields
+            JsonElement originalCatalyst = json.get("catalyst");
+            JsonElement originalOutputs = json.get("outputs");
+
+            boolean convertedCatalyst = false;
+            boolean convertedOutputs = false;
+
+            // Convert catalyst from CC format to KubeJS format if needed
+            if (originalCatalyst != null && originalCatalyst.isJsonObject()) {
+                var catObj = originalCatalyst.getAsJsonObject();
+                if (catObj.has("id")) {
+                    convertedCatalyst = true;
+                    JsonObject kjsCatalyst = ccItemToKjsItem(catObj);
+                    json.add("catalyst", kjsCatalyst);
+                }
+            }
+
+            // Convert outputs from CC format to KubeJS format if needed
+            if (originalOutputs != null && originalOutputs.isJsonArray()) {
+                var outArr = originalOutputs.getAsJsonArray();
+                if (outArr.size() > 0 && outArr.get(0).isJsonObject() && outArr.get(0).getAsJsonObject().has("id")) {
+                    convertedOutputs = true;
+                    JsonArray kjsOutputs = new JsonArray();
+                    for (int i = 0; i < outArr.size(); i++) {
+                        var outObj = outArr.get(i).getAsJsonObject();
+                        kjsOutputs.add(ccItemToKjsItem(outObj));
+                    }
+                    json.add("outputs", kjsOutputs);
+                }
+            }
+
+            try {
+                super.deserialize(merge);
+            } finally {
+                // Restore original CC format for the vanilla recipe parser
+                if (convertedCatalyst) {
+                    json.add("catalyst", originalCatalyst);
+                }
+                if (convertedOutputs) {
+                    json.add("outputs", originalOutputs);
+                }
+            }
+        }
+
+        /**
+         * Converts a CompactCrafting-format item ({id, Count, tag/nbt}) to KubeJS-format ({item, count, nbt}).
+         */
+        private JsonObject ccItemToKjsItem(JsonObject ccItem) {
+            JsonObject kjsItem = new JsonObject();
+            kjsItem.addProperty("item", ccItem.get("id").getAsString());
+
+            if (ccItem.has("Count")) {
+                int count = ccItem.get("Count").getAsInt();
+                if (count > 1) {
+                    kjsItem.addProperty("count", count);
+                }
+            }
+
+            // Copy NBT data (CC uses "tag" or "nbt", KubeJS uses "nbt")
+            if (ccItem.has("tag")) {
+                kjsItem.add("nbt", ccItem.get("tag"));
+            } else if (ccItem.has("nbt")) {
+                kjsItem.add("nbt", ccItem.get("nbt"));
+            }
+
+            return kjsItem;
+        }
 
         @Override
         public void serialize() {
             super.serialize();
-//            this.json.remove("catalyst");
-//            this.json.add("catalyst", InputItemToCCJson(CATALYST));
-//
-//            this.json.remove("outputs");
-//            this.json.add("outputs", OutputItemsToCCJson(OUTPUTS));
+
+            // Convert catalyst from KubeJS format to CC format
+            if (json.has("catalyst")) {
+                json.remove("catalyst");
+                json.add("catalyst", inputItemToCCJson(CATALYST));
+            }
+
+            // Convert outputs from KubeJS format to CC format
+            if (json.has("outputs")) {
+                json.remove("outputs");
+                json.add("outputs", outputItemsToCCJson(OUTPUTS));
+            }
         }
 
-        public JsonObject InputItemToCCJson(RecipeKey<InputItem> key) {
+        /**
+         * Converts a KubeJS InputItem to CompactCrafting's item format ({id, Count, tag}).
+         */
+        public JsonObject inputItemToCCJson(RecipeKey<InputItem> key) {
             InputItem inputItem = this.getValue(key);
-            JsonObject itemObject = inputItem.toJsonJS().getAsJsonObject();
-
-
-            JsonObject ingredientJson = itemObject.get("ingredient").getAsJsonObject();
-            String id = ingredientJson.get("item").getAsString();
             int count = inputItem.count;
 
-            JsonObject CCItemJson = new JsonObject();
-            CCItemJson.addProperty("id", id);
-            CCItemJson.addProperty("Count", count);
-            if(ingredientJson.has("nbt")){
-                CCItemJson.addProperty("nbt", ingredientJson.get("nbt").getAsString());
+            // Get the first matching item stack from the ingredient
+            ItemStack[] stacks = inputItem.ingredient.getItems();
+            ItemStack first = stacks.length > 0 ? stacks[0] : ItemStack.EMPTY;
+            String id = ForgeRegistries.ITEMS.getKey(first.getItem()).toString();
+
+            JsonObject ccItemJson = new JsonObject();
+            ccItemJson.addProperty("id", id);
+            ccItemJson.addProperty("Count", count);
+
+            if (first.hasTag()) {
+                ccItemJson.addProperty("tag", first.getTag().toString());
             }
 
-            return CCItemJson;
+            return ccItemJson;
         }
 
-        public JsonArray OutputItemsToCCJson(RecipeKey<OutputItem[]> key){
+        /**
+         * Converts KubeJS OutputItems to CompactCrafting's item format ([{id, Count, tag}]).
+         */
+        public JsonArray outputItemsToCCJson(RecipeKey<OutputItem[]> key) {
             OutputItem[] outputItems = this.getValue(key);
-            JsonArray CCOutputItemsJson = new JsonArray(outputItems.length);
-            for(OutputItem outputItem : outputItems){
+            JsonArray ccOutputItemsJson = new JsonArray(outputItems.length);
 
-                String id = RegistryInfo.ITEM.getId(outputItem.item.getItem()).toString();
+            for (OutputItem outputItem : outputItems) {
+                String id = ForgeRegistries.ITEMS.getKey(outputItem.item.getItem()).toString();
                 int count = outputItem.getCount();
 
-                JsonObject CCItemJson = new JsonObject();
-                CCItemJson.addProperty("id", id);
-                CCItemJson.addProperty("Count", count);
-                if(outputItem.getNbt()!=null){
-                    CCItemJson.addProperty("tag", outputItem.getNbt().getAsString());
+                JsonObject ccItemJson = new JsonObject();
+                ccItemJson.addProperty("id", id);
+                ccItemJson.addProperty("Count", count);
+
+                if (outputItem.item.hasTag()) {
+                    ccItemJson.addProperty("tag", outputItem.item.getTag().toString());
                 }
 
-                CCOutputItemsJson.add(CCItemJson);
+                ccOutputItemsJson.add(ccItemJson);
             }
-            return CCOutputItemsJson;
+
+            return ccOutputItemsJson;
+        }
+
+        /**
+         * 设置配方占地区域大小。
+         * 使用 FILLED / HOLLOW / EMPTY 层时必须设置此项。
+         */
+        @SuppressWarnings("unused")
+        public CompactCraftingJS setRecipeSize(int size) {
+            this.json.addProperty("recipeSize", size);
+            save();
+            return this;
+        }
+
+        /**
+         * 设置合成时间（tick），默认 200（10秒）。
+         */
+        @SuppressWarnings("unused")
+        public CompactCraftingJS setCraftingTime(int time) {
+            this.json.addProperty("craftingTime", time);
+            save();
+            return this;
         }
 
     }

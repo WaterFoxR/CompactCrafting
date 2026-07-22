@@ -28,9 +28,14 @@ public class ServerConfig {
      */
     public static ForgeConfigSpec.BooleanValue RECIPE_MATCHING;
 
+    /**
+     * 是否加载内置示例配方（如压缩墙壁、末影水晶等），默认关闭。
+     */
+    public static ForgeConfigSpec.BooleanValue LOAD_EXAMPLE_RECIPES;
+
     private static ForgeConfigSpec.EnumValue<FieldDestabilizeHandling> FIELD_DESTABILIZE_HANDLING;
     public static FieldDestabilizeHandling DESTABILIZE_HANDLING = FieldDestabilizeHandling.RESTORE_ALL;
-    
+
     static {
         generateConfig();
     }
@@ -61,6 +66,14 @@ public class ServerConfig {
         FIELD_DESTABILIZE_HANDLING = builder
                 .comment("Changes how the field handles a destabilization event (such as a projector breaking mid-craft)")
                 .defineEnum("destabilizeHandling", FieldDestabilizeHandling.RESTORE_ALL, EnumGetMethod.NAME_IGNORECASE);
+
+        builder.pop();
+
+        builder.comment("Recipe Settings").push("recipes");
+
+        LOAD_EXAMPLE_RECIPES = builder
+                .comment("If true, loads built-in example recipes (compact_walls, ender_crystal, etc.). Default: false")
+                .define("loadExampleRecipes", false);
 
         builder.pop();
 

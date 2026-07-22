@@ -16,6 +16,7 @@ import dev.compactmods.crafting.api.recipe.layers.IRecipeLayer;
 import dev.compactmods.crafting.client.ClientUtilities;
 import dev.compactmods.crafting.client.fakeworld.RenderingWorld;
 import dev.compactmods.crafting.client.ui.ScreenArea;
+import dev.compactmods.crafting.client.render.CubeRenderHelper;
 import dev.compactmods.crafting.core.CCBlocks;
 import dev.compactmods.crafting.core.CCCatalystTypes;
 import dev.compactmods.crafting.recipes.MiniaturizationRecipe;
@@ -34,6 +35,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -42,6 +44,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
@@ -56,13 +59,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.fml.earlydisplay.ElementShader;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 
 public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<MiniaturizationRecipe> {
 
@@ -81,7 +86,10 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
     private boolean singleLayer = false;
     private int singleLayerOffset = 0;
     private double previewRotation = 0.0d;
+    private float rotationSpeed = 1.0f;
     private boolean rotatePreview = true;
+    private boolean isDraggingSpeed = false;
+    private boolean topView = false;
     private boolean debugMode = false;
 
     private ScreenArea backgroundArea = new ScreenArea(27, 0, 70, 70);
@@ -89,7 +97,9 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
     private ScreenArea layerUp = new ScreenArea(55, 75, 10, 10);
     private ScreenArea layerSwap = new ScreenArea(70, 75, 10, 10);
     private ScreenArea layerDown = new ScreenArea(85, 75, 10, 10);
-    private ScreenArea rotateControl = new ScreenArea(100, 75, 10, 10);
+    private ScreenArea speedSlider = new ScreenArea(105, 75, 35, 10);
+    private ScreenArea topViewToggle = new ScreenArea(10, 75, 15, 10);
+    private ScreenArea rotateControl = new ScreenArea(160, 75, 10, 10);
 
     /**
      * Whether the preview is exploded (expanded) or not.
@@ -100,6 +110,12 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
      * Explode multiplier; specifies how far apart blocks are rendered.
      */
     private double explodeMulti = 1.0d;
+    
+    /**
+     * 跟踪当前鼠标悬停选中的方块位置 (用于高亮)
+     */
+    private BlockPos hoveredBlockPos = null;
+    private int hoveredLayerY = -1;
 
     private final MutableComponent MATERIAL_COMPONENT = Component.translatable(CompactCrafting.MOD_ID + ".jei.miniaturization.component")
             .withStyle(ChatFormatting.GRAY)
@@ -248,6 +264,10 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
     @Override
     public List<Component> getTooltipStrings(MiniaturizationRecipe recipe, IRecipeSlotsView slots, double mouseX, double mouseY) {
+        // 重置悬停信息
+        hoveredBlockPos = null;
+        hoveredLayerY = -1;
+        
         if (explodeToggle.contains(mouseX, mouseY)) {
             if (!exploded) return List.of(Component.translatable("compactcrafting.jei.toggle_exploded_view"));
             else return List.of(Component.translatable("compactcrafting.jei.toggle_condensed_view"));
@@ -268,8 +288,38 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
                 return List.of(Component.translatable("compactcrafting.jei.layer_down"));
         }
 
+        if (topViewToggle.contains(mouseX, mouseY)) {
+            return List.of(Component.translatable("compactcrafting.jei.top_view_toggle"));
+        }
+
+        if (speedSlider.contains(mouseX, mouseY)) {
+            return List.of(Component.translatable("compactcrafting.jei.rotation_speed", String.format("%.1f", rotationSpeed)));
+        }
+
         if (rotateControl.contains(mouseX, mouseY)) {
             return List.of(Component.translatable("compactcrafting.jei.rotate_preview"));
+        }
+
+        // 检查是否鼠标在结构预览区域上有方块
+        Optional<HoverInfo> hoverInfo = getHoverInfoAtMouse(recipe, mouseX, mouseY);
+        if (hoverInfo.isPresent()) {
+            HoverInfo info = hoverInfo.get();
+            hoveredBlockPos = info.pos;
+            hoveredLayerY = info.layerY;
+            
+            IRecipeBlockComponent component = info.component;
+            if (component instanceof BlockComponent blockComp) {
+                Item item = blockComp.getBlock().asItem();
+                if (item != Items.AIR) {
+                    ItemStack stack = new ItemStack(item);
+                    List<Component> tooltip = new ArrayList<>();
+                    // 添加物品名称
+                    tooltip.add(stack.getHoverName());
+                    // 添加额外的tooltip信息
+                    tooltip.add(MATERIAL_COMPONENT);
+                    return tooltip;
+                }
+            }
         }
 
         return Collections.emptyList();
@@ -307,6 +357,19 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
                     singleLayerOffset--;
                 }
 
+                return true;
+            }
+
+            if (speedSlider.contains(mouseX, mouseY)) {
+                isDraggingSpeed = true;
+                rotationSpeed = calcSpeedFromMouse(mouseX);
+                handler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+
+            if (topViewToggle.contains(mouseX, mouseY)) {
+                topView = !topView;
+                handler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;
             }
 
@@ -374,7 +437,35 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
         renderPreviewControls(guiGraphics, dims);
 
+        // 处理滑块拖拽
+        if (isDraggingSpeed) {
+            long window = Minecraft.getInstance().getWindow().getWindow();
+            if (GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS) {
+                rotationSpeed = calcSpeedFromMouse(mouseX);
+            } else {
+                isDraggingSpeed = false;
+            }
+        }
+
+        // 更新悬停信息（确保高亮能正确显示
+        updateHoveredInfo(recipe, mouseX, mouseY);
+
         if (previewLevel != null) renderRecipe(recipe, guiGraphics, dims, guiScaleFactor, scissorBounds);
+    }
+    
+    /**
+     * 更新悬停信息
+     */
+    private void updateHoveredInfo(MiniaturizationRecipe recipe, double mouseX, double mouseY) {
+        Optional<HoverInfo> hoverInfo = getHoverInfoAtMouse(recipe, mouseX, mouseY);
+        if (hoverInfo.isPresent()) {
+            HoverInfo info = hoverInfo.get();
+            hoveredBlockPos = info.pos;
+            hoveredLayerY = info.layerY;
+        } else {
+            hoveredBlockPos = null;
+            hoveredLayerY = -1;
+        }
     }
 
     private void renderRecipe(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, AABB dims, double guiScaleFactor, ScreenArea scissorBounds) {
@@ -437,12 +528,16 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
 
     private void drawActualRecipe(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, AABB dims, MultiBufferSource.BufferSource buffers) {
         PoseStack mx = guiGraphics.pose();
-        double gameTime = Minecraft.getInstance().level.getGameTime();
-        previewRotation = rotatePreview?previewRotation +1:previewRotation;
-                mx.mulPose(new Quaternionf().rotationXYZ(
-                        (float) Math.toRadians(35f),
-                        (float) Math.toRadians(-previewRotation),
-                0));
+        previewRotation += (rotatePreview ? rotationSpeed : 0);
+        if (topView) {
+            mx.mulPose(new Quaternionf().rotationXYZ(
+                    (float) Math.toRadians(90f), 0, 0));
+        } else {
+            mx.mulPose(new Quaternionf().rotationXYZ(
+                    (float) Math.toRadians(35f),
+                    (float) Math.toRadians(-previewRotation),
+                    0));
+        }
 
         double ySize = recipe.getDimensions().getYsize();
 
@@ -465,6 +560,32 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
         for (int y : renderLayers) {
             recipe.getLayer(y).ifPresent(l -> renderRecipeLayer(recipe, guiGraphics, buffers, l, y));
         }
+        
+        // 渲染高亮（如果有的话）
+        if (hoveredBlockPos != null && hoveredLayerY != -1) {
+            renderHighlightAtPosition(recipe, guiGraphics, buffers, hoveredBlockPos, hoveredLayerY, dims);
+        }
+    }
+    
+    /**
+     * 在指定位置渲染高亮
+     */
+    private void renderHighlightAtPosition(MiniaturizationRecipe recipe, GuiGraphics guiGraphics, 
+                                          MultiBufferSource.BufferSource buffers, BlockPos pos, int layerY, AABB dims) {
+        PoseStack mx = guiGraphics.pose();
+        mx.pushPose();
+        
+        // 移到目标方块位置（和 renderRecipeLayer 中的逻辑一致）
+        mx.translate(
+                ((pos.getX() + 0.5) * explodeMulti),
+                ((layerY + 0.5) * explodeMulti),
+                ((pos.getZ() + 0.5) * explodeMulti)
+        );
+        
+        // 渲染高亮框
+        renderHighlightBox(guiGraphics, buffers, mx);
+        
+        mx.popPose();
     }
 
     private void renderPreviewControls(GuiGraphics guiGraphics, AABB dims) {
@@ -478,12 +599,6 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             drawScaledTexture(guiGraphics, sprites, explodeToggle, 20, 0, 20, 20, 160, 20);
         } else {
             drawScaledTexture(guiGraphics, sprites, explodeToggle, 0, 0, 20, 20, 160, 20);
-        }
-
-        if (rotatePreview) {
-            drawScaledTexture(guiGraphics, sprites, rotateControl, 140, 0, 20, 20, 160, 20);
-        } else {
-            drawScaledTexture(guiGraphics, sprites, rotateControl, 120, 0, 20, 20, 160, 20);
         }
 
         // Layer change buttons
@@ -502,7 +617,40 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             }
         }
 
-        // drawScaledTexture(mx, sprites, bindPlate, 120, 0, 20, 20, 140, 20);
+        // 绘制速度滑块
+        Font sliderFont = Minecraft.getInstance().font;
+        String speedLabel = String.format("%.1f", rotationSpeed);
+
+        // 滑块轨道（2px高的灰色线条）
+        int trackX = speedSlider.x;
+        int trackY = speedSlider.y + speedSlider.height / 2 - 1;
+        int trackWidth = speedSlider.width;
+        guiGraphics.fill(trackX, trackY, trackX + trackWidth, trackY + 2, 0xFF888888);
+
+        // 滑块手柄（白色矩形）
+        float speedRatio = Math.min(1.0f, rotationSpeed / 5.0f);
+        int handleX = trackX + (int) (trackWidth * speedRatio);
+        int handleSize = 6;
+        guiGraphics.fill(handleX - handleSize / 2, trackY - 2, handleX + handleSize / 2, trackY + 4, 0xFFFFFFFF);
+
+        // 速度标签（滑块上方）
+        guiGraphics.drawString(sliderFont, speedLabel, speedSlider.x, speedSlider.y - 9, 0xFFFFFFFF);
+
+        // 俯视图按钮
+        int tvColor = topView ? 0xFFFFFF88 : 0x88FFFFFF;
+        guiGraphics.fill(topViewToggle.x, topViewToggle.y,
+                topViewToggle.x + topViewToggle.width, topViewToggle.y + topViewToggle.height,
+                tvColor);
+        guiGraphics.drawString(sliderFont, "TV",
+                topViewToggle.x + 1, topViewToggle.y + 1,
+                topView ? 0xFF000000 : 0xFFFFFFFF);
+
+        // 播放/暂停按钮
+        if (rotatePreview) {
+            drawScaledTexture(guiGraphics, sprites, rotateControl, 140, 0, 20, 20, 160, 20);
+        } else {
+            drawScaledTexture(guiGraphics, sprites, rotateControl, 120, 0, 20, 20, 160, 20);
+        }
 
         mx.popPose();
     }
@@ -565,5 +713,167 @@ public class JeiMiniaturizationCraftingCategory implements IRecipeCategory<Minia
             CompactCrafting.LOGGER.warn("Error rendering block in preview: {}", state1);
             CompactCrafting.LOGGER.error("Stack Trace", e);
         }
+    }
+    
+    /**
+     * 渲染高亮框
+     */
+    private void renderHighlightBox(GuiGraphics guiGraphics, MultiBufferSource.BufferSource buffers, PoseStack poseStack) {
+        // 使用明亮的白色高亮（ARGB格式）- 更容易看到
+        int color = FastColor.ARGB32.color(255, 255, 255, 255);
+        
+        // 稍微放大一点，让高亮框包围在方块外面
+        float expand = 0.05f;
+        AABB box = new AABB(
+                -0.5f - expand, -0.5f - expand, -0.5f - expand,
+                0.5f + expand, 0.5f + expand, 0.5f + expand);
+        
+        // 渲染高亮框的线框
+        VertexConsumer vertexConsumer = buffers.getBuffer(RenderType.lines());
+        
+        // 前面四条边
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.minY, box.maxZ), 
+                new Vec3(box.maxX, box.minY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.minY, box.maxZ), 
+                new Vec3(box.maxX, box.maxY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.maxY, box.maxZ), 
+                new Vec3(box.minX, box.maxY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.maxY, box.maxZ), 
+                new Vec3(box.minX, box.minY, box.maxZ));
+        
+        // 后面四条边
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.minY, box.minZ), 
+                new Vec3(box.maxX, box.minY, box.minZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.minY, box.minZ), 
+                new Vec3(box.maxX, box.maxY, box.minZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.maxY, box.minZ), 
+                new Vec3(box.minX, box.maxY, box.minZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.maxY, box.minZ), 
+                new Vec3(box.minX, box.minY, box.minZ));
+        
+        // 连接前后的边
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.minY, box.minZ), 
+                new Vec3(box.minX, box.minY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.minY, box.minZ), 
+                new Vec3(box.maxX, box.minY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.maxX, box.maxY, box.minZ), 
+                new Vec3(box.maxX, box.maxY, box.maxZ));
+        drawLine(vertexConsumer, poseStack, color, 
+                new Vec3(box.minX, box.maxY, box.minZ), 
+                new Vec3(box.minX, box.maxY, box.maxZ));
+    }
+    
+    /**
+     * 绘制一条线
+     */
+    private void drawLine(VertexConsumer consumer, PoseStack poseStack, int color, Vec3 start, Vec3 end) {
+        CubeRenderHelper.drawLine(consumer, poseStack, color, start, end);
+    }
+
+    /**
+     * 根据鼠标X位置计算旋转速度 (0.0 ~ 5.0)
+     */
+    private float calcSpeedFromMouse(double mouseX) {
+        double relX = mouseX - speedSlider.x;
+        relX = Math.max(0, Math.min(relX, speedSlider.width));
+        float ratio = (float) (relX / speedSlider.width);
+        return Math.round(ratio * 50.0f) / 10.0f;
+    }
+
+    // 辅助记录类来保存选中方块的信息
+    private static class HoverInfo {
+        IRecipeBlockComponent component;
+        BlockPos pos;
+        int layerY;
+        
+        HoverInfo(IRecipeBlockComponent component, BlockPos pos, int layerY) {
+            this.component = component;
+            this.pos = pos;
+            this.layerY = layerY;
+        }
+    }
+
+    private Optional<HoverInfo> getHoverInfoAtMouse(MiniaturizationRecipe recipe, double mouseX, double mouseY) {
+        // 仅俯视图模式下启用悬停检测
+        if (!topView) return Optional.empty();
+        if (previewLevel == null) return Optional.empty();
+        if (!backgroundArea.contains(mouseX, mouseY)) return Optional.empty();
+
+        AABB dims = recipe.getDimensions();
+
+        // 计算预览缩放
+        Vec3 dimsVec = new Vec3(dims.getXsize(), dims.getYsize(), dims.getZsize());
+        float recipeAvgDim = (float) dimsVec.length();
+        float previewScale = (float) ((3 + Math.exp(3 - (recipeAvgDim / 5))) / explodeMulti);
+
+        double previewCenterX = backgroundArea.x + 35;
+        double previewCenterY = 35;
+
+        // 中心偏移量
+        double cx = -(dims.getXsize() / 2 * explodeMulti + 0.5);
+        double cz = -(dims.getZsize() / 2 * explodeMulti + 0.5);
+
+        double e = explodeMulti;
+        // 俯视图下：Rx(90°) 使配方平面X→屏幕X，Z→屏幕Y
+        // 方块在屏幕上占 previewScale 像素（方块始终1x1，不随explode缩放）
+        // 检测半径 = previewScale * 0.5（半宽）放宽到 95% 避免边缘漏检
+        double detectionRadius = previewScale * 0.95;
+
+        // 从上层到下层遍历（上层方块优先）
+        int[] renderLayers;
+        if (!singleLayer) {
+            renderLayers = IntStream.range(0, (int) dims.getYsize()).toArray();
+        } else {
+            renderLayers = new int[]{singleLayerOffset};
+        }
+
+        record Candidate(HoverInfo info, double dist) {}
+        List<Candidate> candidates = new ArrayList<>();
+
+        for (int layerIdx = renderLayers.length - 1; layerIdx >= 0; layerIdx--) {
+            int layerY = renderLayers[layerIdx];
+            final int finalLayerY = layerY;
+            Optional<IRecipeLayer> layerOpt = recipe.getLayer(layerY);
+            if (layerOpt.isEmpty()) continue;
+
+            IRecipeLayer layer = layerOpt.get();
+            AABB layerBounds = BlockSpaceUtil.getLayerBounds(dims, layerY);
+
+            // 正向投影每个方块到屏幕，找离鼠标最近的
+            BlockPos.betweenClosedStream(layerBounds).forEach(filledPos -> {
+                BlockPos zeroedPos = filledPos.below(finalLayerY);
+                Optional<String> componentForPosition = layer.getComponentForPosition(zeroedPos);
+                componentForPosition.flatMap(recipe.getComponents()::getBlock).ifPresent(comp -> {
+                    double sx = ((filledPos.getX() + 0.5) * e + cx) * previewScale + previewCenterX;
+                    double sz = ((filledPos.getZ() + 0.5) * e + cz) * previewScale + previewCenterY;
+                    double dx = sx - mouseX;
+                    double dz = sz - mouseY;
+                    double dist = Math.sqrt(dx * dx + dz * dz);
+                    if (dist < detectionRadius) {
+                        candidates.add(new Candidate(
+                            new HoverInfo(comp, filledPos, finalLayerY), dist));
+                    }
+                });
+            });
+        }
+
+        // 选择最近的
+        if (!candidates.isEmpty()) {
+            candidates.sort(Comparator.comparingDouble(Candidate::dist));
+            return Optional.of(candidates.get(0).info);
+        }
+
+        return Optional.empty();
     }
 }

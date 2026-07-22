@@ -45,3 +45,4 @@ build-out/
 src/generated/
 
 forge-main/src/generated/
+/.vscode/settings.json

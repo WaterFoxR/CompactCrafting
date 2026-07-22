@@ -11,6 +11,8 @@
   "compactcrafting.jei.miniaturization.title": "微缩合成",
   "compactcrafting.jei.miniaturization.component": "材料组成：放置于世界中。",
   "compactcrafting.jei.miniaturization.catalyst": "将该物品投入微缩力场中以激活合成。",
+  "compactcrafting.jei.rotation_speed": "旋转速度: x%s",
+  "compactcrafting.jei.top_view_toggle": "俯视图模式（显示方块信息）",
   "compactcrafting.jei.rotate_preview": "切换旋转",
 
   "compactcrafting.top.current_recipe": "配方: ",

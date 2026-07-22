@@ -11,6 +11,8 @@
   "compactcrafting.jei.miniaturization.title": "Miniaturization Crafting",
   "compactcrafting.jei.miniaturization.component": "Material Component: Placed in world.",
   "compactcrafting.jei.miniaturization.catalyst": "Throw this item into the miniaturization field to start crafting.",
+  "compactcrafting.jei.rotation_speed": "Rotation Speed: x%s",
+  "compactcrafting.jei.top_view_toggle": "Top View Mode (Show block info)",
   "compactcrafting.jei.rotate_preview": "Rotary Switch",
 
   "compactcrafting.top.current_recipe": "Recipe: ",
